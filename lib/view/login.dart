@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kashsense/view/master.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -54,7 +55,12 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(height: 28),
                   ElevatedButton(
                     onPressed: () {
-                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MasterView(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF6200EE),
