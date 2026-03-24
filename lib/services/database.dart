@@ -1,6 +1,6 @@
 import '../models/user.dart';
-class Database {
 
+class Database {
   static List<User> users = [];
 
   static void addUser(String name, String email, String password) {

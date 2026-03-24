@@ -1,8 +1,13 @@
-
 enum TransactionType { income, expense }
 
-enum TransactionCategory { 
-  food, transport, leisure, health, bills, salary, others 
+enum TransactionCategory {
+  food,
+  transport,
+  leisure,
+  health,
+  bills,
+  salary,
+  others,
 }
 
 class TransactionModel {
@@ -28,8 +33,12 @@ class TransactionModel {
       title: map['title'],
       amount: map['amount'],
       date: DateTime.parse(map['date']),
-      type: TransactionType.values.firstWhere((e) => e.toString() == map['type']),
-      category: TransactionCategory.values.firstWhere((e) => e.toString() == map['category']),
+      type: TransactionType.values.firstWhere(
+        (e) => e.toString() == map['type'],
+      ),
+      category: TransactionCategory.values.firstWhere(
+        (e) => e.toString() == map['category'],
+      ),
     );
   }
 

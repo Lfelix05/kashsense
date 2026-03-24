@@ -14,7 +14,7 @@ class MasterView extends StatefulWidget {
 class _MasterViewState extends State<MasterView> {
   int _selectedIndex = 0;
 
-  List<Widget> _views = [
+  final List<Widget> _views = [
     SummaryScreen(),
     TransactionScreen(),
     SettingsScreen(),
@@ -33,15 +33,15 @@ class _MasterViewState extends State<MasterView> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Summary',
+            label: 'Resumo',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
-            label: 'Transactions',
+            label: 'Transações',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: 'Configurações',
           ),
         ],
       ),

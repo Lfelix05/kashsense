@@ -12,7 +12,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text(
+          'Configurações',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontFamily: 'JetBrains Mono',
+            fontSize: 24,
+            color: Colors.white,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 113, 148, 255),
         automaticallyImplyLeading: false,
@@ -23,30 +31,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Configurações',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              ListTile(
-                leading: Icon(Icons.account_circle),
-                title: Text('Perfil'),
-                subtitle: Text('Gerencie suas informações pessoais'),
-                onTap: () {},
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.notifications),
-                title: Text('Notificações'),
-                subtitle: Text('Configure suas preferências de notificações'),
-                onTap: () {},
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.lock),
-                title: Text('Segurança'),
-                subtitle: Text('Gerencie suas configurações de segurança'),
-                onTap: () {},
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color.fromARGB(255, 182, 208, 255),
+                      const Color.fromARGB(255, 218, 212, 212),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.account_circle),
+                      title: Text('Perfil'),
+                      subtitle: Text('Gerencie suas informações pessoais'),
+                      onTap: () {},
+                    ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.notifications),
+                      title: Text('Notificações'),
+                      subtitle: Text(
+                        'Configure suas preferências de notificações',
+                      ),
+                      onTap: () {},
+                    ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.lock),
+                      title: Text('Segurança'),
+                      subtitle: Text(
+                        'Gerencie suas configurações de segurança',
+                      ),
+                      onTap: () {},
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

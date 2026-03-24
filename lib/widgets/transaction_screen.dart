@@ -12,7 +12,15 @@ class _TransactionScreenState extends State<TransactionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transactions'),
+        title: const Text(
+          'Transações',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontFamily: 'JetBrains Mono',
+            fontSize: 24,
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: const Color.fromARGB(255, 255, 113, 113),
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -76,9 +84,75 @@ class _TransactionScreenState extends State<TransactionScreen> {
                   ],
                 ),
               ),
+              SizedBox(height: 16),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Transações Recentes'),
+                      SizedBox(height: 8),
+                      ListTile(
+                        leading: Icon(Icons.shopping_cart),
+                        title: Text('Compra no Supermercado'),
+                        subtitle: Text('R\$ 150,00 - 01/01/2024'),
+                      ),
+                      Divider(),
+                      ListTile(
+                        leading: Icon(Icons.local_gas_station),
+                        title: Text('Abastecimento de Combustível'),
+                        subtitle: Text('R\$ 80,00 - 02/01/2024'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Adicionar Nova Transação'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Descrição'),
+                    ),
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Valor'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Data'),
+                      keyboardType: TextInputType.datetime,
+                    ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Fechar'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        backgroundColor: const Color.fromARGB(255, 255, 113, 113),
+        child: Icon(Icons.add, color: Colors.white),
       ),
     );
   }
