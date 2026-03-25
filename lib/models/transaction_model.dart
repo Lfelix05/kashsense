@@ -1,17 +1,18 @@
 enum TransactionType { income, expense }
 
 enum TransactionCategory {
-  food,
-  transport,
-  leisure,
-  health,
-  bills,
-  salary,
-  others,
+  comida,
+  transporte,
+  lazer,
+  saude,
+  contas,
+  salario,
+  outros,
 }
 
 class TransactionModel {
   final String id;
+  final String userId;
   final String title;
   final double amount;
   final DateTime date;
@@ -20,6 +21,7 @@ class TransactionModel {
 
   TransactionModel({
     required this.id,
+    required this.userId,
     required this.title,
     required this.amount,
     required this.date,
@@ -30,6 +32,7 @@ class TransactionModel {
   factory TransactionModel.fromMap(Map<String, dynamic> map) {
     return TransactionModel(
       id: map['id'],
+      userId: map['userId'],
       title: map['title'],
       amount: map['amount'],
       date: DateTime.parse(map['date']),
@@ -45,6 +48,7 @@ class TransactionModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'userId': userId,
       'title': title,
       'amount': amount,
       'date': date.toIso8601String(),

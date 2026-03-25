@@ -118,38 +118,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Adicionar Nova Transação'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      decoration: InputDecoration(labelText: 'Descrição'),
-                    ),
-                    TextField(
-                      decoration: InputDecoration(labelText: 'Valor'),
-                      keyboardType: TextInputType.number,
-                    ),
-                    TextField(
-                      decoration: InputDecoration(labelText: 'Data'),
-                      keyboardType: TextInputType.datetime,
-                    ),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Fechar'),
-                  ),
-                ],
-              );
-            },
-          );
+          
         },
         backgroundColor: const Color.fromARGB(255, 255, 113, 113),
         child: Icon(Icons.add, color: Colors.white),

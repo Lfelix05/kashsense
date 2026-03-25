@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/summary_screen.dart';
-import '../widgets/transaction_screen.dart';
-import '../widgets/settings_screen.dart';
+import 'summary_screen.dart';
+import 'transaction_screen.dart';
+import 'settings_screen.dart';
 
 
 class MasterView extends StatefulWidget {
