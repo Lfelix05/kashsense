@@ -8,14 +8,20 @@ import '../widgets/add_transaction.dart';
 import '../widgets/budget_progress.dart';
 
 class SummaryScreen extends StatefulWidget {
-  const SummaryScreen({super.key});
+  final String userId;
+  final String userName;
+
+  const SummaryScreen({
+    super.key,
+    required this.userId,
+    required this.userName,
+  });
 
   @override
   State<SummaryScreen> createState() => _SummaryScreenState();
 }
 
 class _SummaryScreenState extends State<SummaryScreen> {
-  final String _userId = 'user123';
   double _currentBalance = 0;
 
   @override
@@ -25,7 +31,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
   }
 
   Future<void> _loadBalance() async {
-    final balance = await getBalanceForUser(_userId);
+    final balance = await getBalanceForUser(widget.userId);
     if (!mounted) {
       return;
     }
@@ -78,7 +84,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Olá, Usuário!',
+                          'Olá, ${widget.userName}!',
                           style: TextStyle(
                             fontSize: 24,
                             fontFamily: 'JetBrains Mono',
@@ -179,8 +185,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
                             onTap: () {
                               showModalBottomSheet(
                                 context: context,
-                                builder: (context) =>
-                                    buildAddTransaction(context),
+                                isScrollControlled: true,
+                                builder: (context) => buildAddTransaction(
+                                  context,
+                                  userId: widget.userId,
+                                ),
                               );
                             },
                           ),
@@ -201,7 +210,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               }
 
                               final newBalance = await addBalance(
-                                _userId,
+                                widget.userId,
                                 addedAmount,
                               );
 

@@ -14,9 +14,23 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> _register() async {
-    final name = _nameController.text;
-    final email = _emailController.text;
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
     final password = _passwordController.text;
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Preencha todos os campos.')),
+      );
+      return;
+    }
+
+    if (Database.emailExists(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Este email já está cadastrado.')),
+      );
+      return;
+    }
 
     try {
       await Future.delayed(const Duration(seconds: 2));
@@ -24,14 +38,14 @@ class _RegisterViewState extends State<RegisterView> {
       if (mounted) {
         Database.addUser(name, email, password);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful!')),
+          const SnackBar(content: Text('Cadastro realizado com sucesso!')),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Registration failed: $e')));
+      ).showSnackBar(SnackBar(content: Text('Falha no cadastro: $e')));
     }
   }
 

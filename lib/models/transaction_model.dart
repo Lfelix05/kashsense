@@ -10,7 +10,7 @@ enum TransactionCategory {
   outros,
 }
 
-class TransactionModel {
+class Transaction {
   final String id;
   final String userId;
   final String title;
@@ -19,7 +19,7 @@ class TransactionModel {
   final TransactionType type;
   final TransactionCategory category;
 
-  TransactionModel({
+  Transaction({
     required this.id,
     required this.userId,
     required this.title,
@@ -29,8 +29,8 @@ class TransactionModel {
     required this.category,
   });
 
-  factory TransactionModel.fromMap(Map<String, dynamic> map) {
-    return TransactionModel(
+  factory Transaction.fromMap(Map<String, dynamic> map) {
+    return Transaction(
       id: map['id'],
       userId: map['userId'],
       title: map['title'],

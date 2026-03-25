@@ -9,7 +9,7 @@ Future<String> addTransaction(
   TransactionType type,
   TransactionCategory category,
 ) async {
-  final transaction = TransactionModel(
+  final transaction = Transaction(
     id: DateTime.now().millisecondsSinceEpoch.toString(),
     userId: userId,
     title: title,
@@ -19,7 +19,7 @@ Future<String> addTransaction(
     category: category,
   );
 
-  Database.transactions.add(transaction);
+  Database.addTransaction(userId, transaction);
   return transaction.id;
 }
 
@@ -28,8 +28,8 @@ Future<String> addUser(String name, String email, String password) async {
   return 'Usuário $name adicionado com sucesso!';
 }
 
-Future<List<TransactionModel>> getTransactionsForUser(String userId) async {
-  return Database.transactions.where((t) => t.userId == userId).toList();
+Future<List<Transaction>> getTransactionsForUser(String userId) async {
+  return Database.getTransactions(userId);
 }
 
 Future<double> getBalanceForUser(String userId) async {

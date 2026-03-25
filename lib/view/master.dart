@@ -3,9 +3,11 @@ import 'summary_screen.dart';
 import 'transaction_screen.dart';
 import 'settings_screen.dart';
 
-
 class MasterView extends StatefulWidget {
-  const MasterView({super.key});
+  final String userId;
+  final String userName;
+
+  const MasterView({super.key, required this.userId, required this.userName});
 
   @override
   State<MasterView> createState() => _MasterViewState();
@@ -14,11 +16,18 @@ class MasterView extends StatefulWidget {
 class _MasterViewState extends State<MasterView> {
   int _selectedIndex = 0;
 
-  final List<Widget> _views = [
-    SummaryScreen(),
-    TransactionScreen(),
-    SettingsScreen(),
-  ];
+  late final List<Widget> _views;
+
+  @override
+  void initState() {
+    super.initState();
+    _views = [
+      SummaryScreen(userId: widget.userId, userName: widget.userName),
+      TransactionScreen(userId: widget.userId),
+      const SettingsScreen(),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,14 +40,8 @@ class _MasterViewState extends State<MasterView> {
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Resumo',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Transações',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Resumo'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Transações'),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Configurações',
