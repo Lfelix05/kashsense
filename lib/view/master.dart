@@ -24,7 +24,7 @@ class _MasterViewState extends State<MasterView> {
     _views = [
       SummaryScreen(userId: widget.userId, userName: widget.userName),
       TransactionScreen(userId: widget.userId),
-      const SettingsScreen(),
+      SettingsScreen(userId: widget.userId, userName: widget.userName),
     ];
   }
 

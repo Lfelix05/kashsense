@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   fl_chart: ^0.70.2
+  file_picker: ^10.3.2
 
 dev_dependencies:
   flutter_test:

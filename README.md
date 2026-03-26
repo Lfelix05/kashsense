@@ -1,66 +1,84 @@
 # KashSense
 
-Aplicativo de finanças pessoais desenvolvido em Flutter. Permite registrar receitas e despesas, acompanhar o saldo, visualizar gráficos de resumo mensal e monitorar o progresso do orçamento.
+Aplicativo de finanças pessoais desenvolvido com Flutter para controle de receitas, despesas e orçamento mensal.
 
-## Funcionalidades
+## Estado atual do projeto
 
-- **Autenticação** — Telas de login e cadastro de usuário
-- **Resumo financeiro** — Visão geral do mês com saldo atual, total de receitas e despesas
-- **Gráfico PieChart** — Distribuição visual entre receitas e despesas com `fl_chart`
-- **Termômetro de orçamento** — Barra de progresso que muda de azul → laranja → vermelho conforme o limite mensal é consumido
-- **Ações rápidas** — Botões para adicionar transação, adicionar saldo e acessar relatórios
-- **Tela de transações** — Listagem e registro de movimentações financeiras
-- **Configurações** — Tela de preferências do usuário
+O app possui autenticação local, fluxo principal por abas (Resumo, Transações, Configurações), gráficos dinâmicos baseados nos dados do usuário e edição de perfil com foto.
 
-## Tecnologias
+Observação: os dados são mantidos em memória (`Database` estático), sem persistência em banco local/remoto por enquanto.
 
-| Tech                                                    | Uso                 |
-| ------------------------------------------------------- | ------------------- |
-| Flutter                                                 | Framework principal |
-| Dart `^3.11.1`                                          | Linguagem           |
-| [fl_chart](https://pub.dev/packages/fl_chart) `^0.70.2` | Gráficos            |
-| JetBrains Mono                                          | Fonte personalizada |
+## Funcionalidades implementadas
 
-## Estrutura do projeto
+- Login e cadastro de usuário
+- Resumo com saldo atual, nome do usuário e foto de perfil
+- Gráfico mensal de pizza (receitas x despesas) atualizado em tempo real
+- Orçamento mensal com limite configurável por usuário (toque no card para editar)
+- Ações rápidas para adicionar transação, adicionar saldo e abrir relatórios
+- Tela de transações com stream reativa e total de gastos
+- Tela de relatórios com gráfico de colunas empilhadas por categoria
+- Toque nas categorias do relatório para ver detalhamento (receitas, despesas e gasto total da categoria)
+- Configurações de perfil com alteração de nome e foto (via seletor de arquivo)
+- App travado em orientação vertical (`portraitUp` e `portraitDown`)
 
-```
+## Tecnologias e dependências
+
+- Flutter
+- Dart `^3.11.1`
+- `fl_chart: ^0.70.2` para gráficos
+- `file_picker: ^10.3.2` para seleção de foto de perfil
+- Fonte personalizada JetBrains Mono
+
+## Estrutura principal
+
+```text
 lib/
 ├── main.dart
 ├── models/
-│   ├── transaction_model.dart   # Modelo de transação (receita/despesa + categorias)
-│   └── user.dart                # Modelo de usuário
+│   ├── account_model.dart
+│   ├── transaction_model.dart
+│   └── user.dart
 ├── providers/
-│   └── providers.dart           # Gerenciamento de estado
+│   ├── providers.dart
+│   └── validator.dart
 ├── services/
-│   └── database.dart            # Camada de dados (usuários)
+│   └── database.dart
 ├── view/
-│   ├── home.dart                # Rota inicial
-│   ├── login.dart               # Tela de login
-│   ├── register.dart            # Tela de cadastro
-│   ├── master.dart              # Navegação principal (BottomNavigationBar)
-│   └── record.dart              # Tela de registro
+│   ├── home.dart
+│   ├── login.dart
+│   ├── master.dart
+│   ├── profile.dart
+│   ├── record.dart
+│   ├── register.dart
+│   ├── settings_screen.dart
+│   ├── summary_screen.dart
+│   └── transaction_screen.dart
 └── widgets/
-    ├── summary_screen.dart      # Resumo, gráfico e orçamento
-    ├── transaction_screen.dart  # Listagem de transações
-    ├── settings_screen.dart     # Configurações
-    ├── action_button.dart       # Botão de ação rápida reutilizável
-    ├── add_transaction.dart     # Formulário de nova transação
-    ├── add_balance.dart         # Formulário para adicionar saldo
-    └── budget_progress.dart     # Termômetro de orçamento
+    ├── action_button.dart
+    ├── add_balance.dart
+    ├── add_transaction.dart
+    ├── budget_progress.dart
+    └── month_graph.dart
 ```
 
 ## Como executar
 
-**Pré-requisitos:** Flutter SDK instalado e configurado.
+Pré-requisitos:
+
+- Flutter SDK instalado
+- Dispositivo/emulador configurado
 
 ```bash
-# Instalar dependências
 flutter pub get
-
-# Rodar o app
 flutter run
 ```
 
-## Categorias de transação
+## Categorias de transação (atuais)
 
-`food` · `transport` · `leisure` · `health` · `bills` · `salary` · `others`
+- comida
+- transporte
+- lazer
+- saude
+- contas
+- salario
+- outros

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'profile.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final String? userId;
+  final String? userName;
+
+  const SettingsScreen({super.key, this.userId, this.userName});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -52,7 +56,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       leading: Icon(Icons.account_circle),
                       title: Text('Perfil'),
                       subtitle: Text('Gerencie suas informações pessoais'),
-                      onTap: () {},
+                      onTap: () {
+                        final userId = widget.userId;
+                        if (userId == null || userId.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Usuário não identificado. Faça login novamente.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProfileSetting(userId: userId),
+                          ),
+                        );
+                      },
                     ),
                     Divider(),
                     ListTile(

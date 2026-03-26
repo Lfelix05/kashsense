@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../providers/validator.dart';
 import '../services/database.dart';
 
 class RegisterView extends StatefulWidget {
@@ -18,7 +19,9 @@ class _RegisterViewState extends State<RegisterView> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+    if (NameValidator.validate(name) != null ||
+        EmailValidator.validate(email) != null ||
+        PasswordValidator.validate(password) != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Preencha todos os campos.')),
       );
@@ -70,7 +73,7 @@ class _RegisterViewState extends State<RegisterView> {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 28),
-                  TextField(
+                  TextFormField(
                     decoration: InputDecoration(
                       icon: Icon(Icons.person),
                       labelText: 'Nome',
@@ -79,9 +82,10 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                     ),
                     controller: _nameController,
+                    validator: NameValidator.validate,
                   ),
                   const SizedBox(height: 16),
-                  TextField(
+                  TextFormField(
                     decoration: InputDecoration(
                       icon: Icon(Icons.email),
                       labelText: 'Email',
@@ -90,9 +94,10 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                     ),
                     controller: _emailController,
+                    validator: EmailValidator.validate,
                   ),
                   const SizedBox(height: 16),
-                  TextField(
+                  TextFormField(
                     obscureText: true,
                     decoration: InputDecoration(
                       icon: Icon(Icons.lock),
@@ -102,6 +107,7 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                     ),
                     controller: _passwordController,
+                    validator: PasswordValidator.validate,
                   ),
                   const SizedBox(height: 28),
                   ElevatedButton(

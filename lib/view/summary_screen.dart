@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:kashsense/services/database.dart';
 import 'package:kashsense/widgets/action_button.dart';
 import 'package:kashsense/widgets/month_graph.dart';
 import '../providers/providers.dart';
@@ -24,6 +27,19 @@ class SummaryScreen extends StatefulWidget {
 class _SummaryScreenState extends State<SummaryScreen> {
   double _currentBalance = 0;
 
+  ImageProvider<Object>? _buildProfilePhoto(String? photoBase64) {
+    if (photoBase64 == null || photoBase64.isEmpty) {
+      return null;
+    }
+
+    try {
+      final bytes = base64Decode(photoBase64);
+      return MemoryImage(bytes);
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +58,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = Database.getUserById(widget.userId);
+    final displayName = currentUser?.name ?? widget.userName;
+    final profilePhoto = _buildProfilePhoto(currentUser?.profilePictureUrl);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -84,21 +104,27 @@ class _SummaryScreenState extends State<SummaryScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Olá, ${widget.userName}!',
+                          'Olá, $displayName!',
                           style: TextStyle(
                             fontSize: 24,
                             fontFamily: 'JetBrains Mono',
                             color: Colors.white,
                           ),
                         ),
-                        Icon(
-                          Icons.account_circle,
-                          size: 48,
-                          color: Colors.white70,
+                        CircleAvatar(
+                          radius: 36,
+                          backgroundImage: profilePhoto,
+                          backgroundColor: Colors.white.withOpacity(0.85),
+                          child: profilePhoto == null
+                              ? const Icon(
+                                  Icons.account_circle,
+                                  size: 28,
+                                  color: Colors.black54,
+                                )
+                              : null,
                         ),
                       ],
                     ),
-
                     SizedBox(height: 8),
                     Card(
                       elevation: 4,
@@ -153,7 +179,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: monthGraph(),
+                  child: monthGraph(userId: widget.userId),
                 ),
               ),
               SizedBox(height: 16),
@@ -182,8 +208,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                           QuickActionButton(
                             icon: Icons.monetization_on,
                             label: 'Add. transação',
-                            onTap: () {
-                              showModalBottomSheet(
+                            onTap: () async {
+                              await showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
                                 builder: (context) => buildAddTransaction(
@@ -191,6 +217,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                   userId: widget.userId,
                                 ),
                               );
+                              await _loadBalance();
                             },
                           ),
                           QuickActionButton(
@@ -238,7 +265,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const RecordView(),
+                                  builder: (context) =>
+                                      RecordView(userId: widget.userId),
                                 ),
                               );
                             },
@@ -258,9 +286,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: BudgetProgress(
+                    userId: widget.userId,
                     label: 'Orçamento Mensal',
-                    spent: 1500,
-                    limit: 2000,
                   ),
                 ),
               ),

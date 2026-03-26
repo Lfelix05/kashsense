@@ -7,6 +7,7 @@ class Database {
   static List<User> users = [];
 
   static Map<String, List<Transaction>> transactionsByUser = {};
+  static Map<String, double> budgetLimitByUser = {};
   static final StreamController<String> _transactionsController =
       StreamController<String>.broadcast();
 
@@ -19,6 +20,7 @@ class Database {
     );
     users.add(user);
     transactionsByUser[user.id] = [];
+    budgetLimitByUser[user.id] = 2000;
     return user;
   }
 
@@ -29,6 +31,37 @@ class Database {
       }
     }
     return null;
+  }
+
+  static User? getUserById(String userId) {
+    for (final user in users) {
+      if (user.id == userId) {
+        return user;
+      }
+    }
+    return null;
+  }
+
+  static User? updateUserProfile(
+    String userId, {
+    required String name,
+    String? profilePictureUrl,
+  }) {
+    final index = users.indexWhere((user) => user.id == userId);
+    if (index == -1) {
+      return null;
+    }
+
+    final currentUser = users[index];
+    final updatedUser = User(
+      id: currentUser.id,
+      name: name,
+      email: currentUser.email,
+      password: currentUser.password,
+      profilePictureUrl: profilePictureUrl ?? currentUser.profilePictureUrl,
+    );
+    users[index] = updatedUser;
+    return updatedUser;
   }
 
   static bool emailExists(String email) {
@@ -83,5 +116,13 @@ class Database {
         yield getTransactions(userId);
       }
     }
+  }
+
+  static double getBudgetLimit(String userId) {
+    return budgetLimitByUser[userId] ?? 2000;
+  }
+
+  static void setBudgetLimit(String userId, double limit) {
+    budgetLimitByUser[userId] = limit;
   }
 }

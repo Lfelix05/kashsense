@@ -1,4 +1,5 @@
 import '../models/transaction_model.dart';
+import '../models/user.dart';
 import '../services/database.dart';
 
 Future<String> addTransaction(
@@ -46,4 +47,20 @@ Future<double> addBalance(String userId, double amount) async {
 Future<String> addBudget(String userId, double amount) async {
   final newBalance = await addBalance(userId, amount);
   return 'Saldo atualizado: R\$ ${newBalance.toStringAsFixed(2)}';
+}
+
+Future<User?> getUserForProfile(String userId) async {
+  return Database.getUserById(userId);
+}
+
+Future<User?> updateUserProfileInfo(
+  String userId, {
+  required String name,
+  String? profilePictureUrl,
+}) async {
+  return Database.updateUserProfile(
+    userId,
+    name: name,
+    profilePictureUrl: profilePictureUrl,
+  );
 }

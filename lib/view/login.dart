@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kashsense/providers/validator.dart';
 import 'package:kashsense/view/master.dart';
 import '../services/database.dart';
 
@@ -55,8 +56,9 @@ class _LoginViewState extends State<LoginView> {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 28),
-                  TextField(
+                  TextFormField(
                     controller: _emailController,
+                    validator: EmailValidator.validate,
                     decoration: InputDecoration(
                       icon: Icon(Icons.email),
                       labelText: 'Email',
@@ -66,8 +68,9 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  TextField(
+                  TextFormField(
                     controller: _passwordController,
+                    validator: PasswordValidator.validate,
                     obscureText: true,
                     decoration: InputDecoration(
                       icon: Icon(Icons.lock),
