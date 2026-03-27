@@ -19,7 +19,17 @@ Observação: os dados são mantidos em memória (`Database` estático), sem per
 - Tela de relatórios com gráfico de colunas empilhadas por categoria
 - Toque nas categorias do relatório para ver detalhamento (receitas, despesas e gasto total da categoria)
 - Configurações de perfil com alteração de nome e foto (via seletor de arquivo)
+- Telas de Notificações e Segurança com interface completa em modo demonstração
+- Proteção contra sobreposição da barra de navegação do sistema em telas com scroll
+- Correção de perda de dados em formulários de adicionar saldo/transação ao abrir ou fechar teclado
 - App travado em orientação vertical (`portraitUp` e `portraitDown`)
+
+## Novidades recentes
+
+- Nova identidade visual nas telas de entrada para melhorar apresentação e usabilidade
+- Estrutura de área segura reutilizável com `lib/widgets/safe_area_condition.dart`
+- Ajuste de formulários para preservar estado no bottom sheet durante mudanças de layout
+- Revisão das telas de Configurações com mais conteúdo visual e seções explicativas
 
 ## Tecnologias e dependências
 
@@ -47,9 +57,11 @@ lib/
 │   ├── home.dart
 │   ├── login.dart
 │   ├── master.dart
+│   ├── notifications_sett.dart
 │   ├── profile.dart
 │   ├── record.dart
 │   ├── register.dart
+│   ├── security_sett.dart
 │   ├── settings_screen.dart
 │   ├── summary_screen.dart
 │   └── transaction_screen.dart
@@ -58,8 +70,25 @@ lib/
     ├── add_balance.dart
     ├── add_transaction.dart
     ├── budget_progress.dart
-    └── month_graph.dart
+    ├── month_graph.dart
+    └── safe_area_condition.dart
 ```
+
+## Limitações atuais
+
+- Os dados continuam em memória (sem persistência em banco local/remoto)
+- Recursos de Notificações e Segurança estão em modo demonstração (UI pronta, sem backend)
+- Não há integração com autenticação externa/online
+
+## Roteiro de demonstração (3-5 minutos)
+
+1. Abertura: mostrar Home e proposta de valor
+2. Login com usuário de teste
+3. Resumo: saldo, gráfico mensal e orçamento
+4. Ações rápidas: adicionar saldo e adicionar transação
+5. Relatórios por categoria
+6. Configurações: perfil, notificações e segurança
+7. Encerramento: destacar melhorias de UX (safe area e preservação de estado)
 
 ## Como executar
 
