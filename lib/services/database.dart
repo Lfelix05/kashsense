@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:kashsense/models/transaction_model.dart';
 import '../models/user.dart';
-
+// Simulação de um banco de dados em memória
 class Database {
   static List<User> users = [];
 
-  static Map<String, List<Transaction>> transactionsByUser = {};
-  static Map<String, double> budgetLimitByUser = {};
+  static Map<String, List<Transaction>> transactionsByUser = {};  // armazenamento das transações por usuário
+  static Map<String, double> budgetLimitByUser = {};              // armazenamento dos limites de orçamento por usuário
   static final StreamController<String> _transactionsController =
       StreamController<String>.broadcast();
 
@@ -72,7 +72,7 @@ class Database {
     }
     return false;
   }
-
+//calcular saldo
   static double getBalance(String userId) {
     final transactions = getTransactions(userId);
     return transactions.fold(0.0, (balance, transaction) {
@@ -82,7 +82,7 @@ class Database {
       return balance - transaction.amount;
     });
   }
-
+//adicionar saldo
   static double addBalance(String userId, double amount) {
     final balanceTransaction = Transaction(
       id: DateTime.now().millisecondsSinceEpoch.toString(),

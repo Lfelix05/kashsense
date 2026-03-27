@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kashsense/view/notifications_sett.dart';
+import 'package:kashsense/view/security_sett.dart';
+import 'package:kashsense/widgets/safe_area_condition.dart';
 import 'profile.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -31,7 +34,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            getBottomSafePadding(context),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -85,7 +93,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       subtitle: Text(
                         'Configure suas preferências de notificações',
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationsSett(),
+                          ),
+                        );
+                      },
                     ),
                     Divider(),
                     ListTile(
@@ -94,7 +109,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       subtitle: Text(
                         'Gerencie suas configurações de segurança',
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SecuritySett(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

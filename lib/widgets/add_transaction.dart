@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/transaction_model.dart';
 import '../providers/providers.dart';
+import 'safe_area_condition.dart';
 
 class _BankCurrencyInputFormatter extends TextInputFormatter {
   @override
@@ -49,156 +50,188 @@ void _moveCursorToEnd(TextEditingController controller) {
 }
 
 Widget buildAddTransaction(BuildContext context, {required String userId}) {
+  return _AddTransactionSheet(userId: userId);
+}
+
+class _AddTransactionSheet extends StatefulWidget {
+  final String userId;
+
+  const _AddTransactionSheet({required this.userId});
+
+  @override
+  State<_AddTransactionSheet> createState() => _AddTransactionSheetState();
+}
+
+class _AddTransactionSheetState extends State<_AddTransactionSheet> {
+  late final TextEditingController titleController;
+  late final TextEditingController amountController;
   TransactionCategory selectedCategory = TransactionCategory.outros;
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController amountController = TextEditingController();
-  amountController.text = '0,00';
-  _moveCursorToEnd(amountController);
-  final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
-  return SafeArea(
-    top: false,
-    child: AnimatedPadding(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.fromLTRB(16, 16, 16, bottomInset + 16),
-      child: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Adicionar Transação',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+  @override
+  void initState() {
+    super.initState();
+    titleController = TextEditingController();
+    amountController = TextEditingController(text: '0,00');
+    _moveCursorToEnd(amountController);
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    amountController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final safeBottomPadding = getBottomSafePadding(context);
+
+    return SafeArea(
+      top: false,
+      child: AnimatedPadding(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          bottomInset + safeBottomPadding,
+        ),
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: titleController,
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Título',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Adicionar Transação',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.done,
-                textAlign: TextAlign.end,
-                onTap: () => _moveCursorToEnd(amountController),
-                onChanged: (_) => _moveCursorToEnd(amountController),
-                inputFormatters: [_BankCurrencyInputFormatter()],
-                decoration: InputDecoration(
-                  prefixText: 'R\$ ',
-                  labelText: 'Valor',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              StatefulBuilder(
-                builder: (context, setLocalState) {
-                  return DropdownButtonFormField<TransactionCategory>(
-                    initialValue: selectedCategory,
-                    decoration: InputDecoration(
-                      labelText: 'Categoria',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    items: TransactionCategory.values
-                        .map(
-                          (category) => DropdownMenuItem<TransactionCategory>(
-                            value: category,
-                            child: Text(_categoryLabel(category)),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      if (value == null) {
-                        return;
-                      }
-                      setLocalState(() {
-                        selectedCategory = value;
-                      });
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    final parsedAmount = _parseCurrencyText(
-                      amountController.text,
-                    );
-
-                    if (titleController.text.isEmpty || parsedAmount <= 0) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Preencha todos os campos corretamente',
-                          ),
-                        ),
-                      );
-                      return;
-                    }
-
-                    addTransaction(
-                      userId,
-                      titleController.text,
-                      parsedAmount,
-                      DateTime.now(),
-                      TransactionType.expense,
-                      selectedCategory,
-                    );
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 255, 69, 69),
-                    minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(
+                const SizedBox(height: 16),
+                TextField(
+                  controller: titleController,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Título',
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Salvar',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  textAlign: TextAlign.end,
+                  onTap: () => _moveCursorToEnd(amountController),
+                  onChanged: (_) => _moveCursorToEnd(amountController),
+                  inputFormatters: [_BankCurrencyInputFormatter()],
+                  decoration: InputDecoration(
+                    prefixText: 'R\$ ',
+                    labelText: 'Valor',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+                DropdownButtonFormField<TransactionCategory>(
+                  initialValue: selectedCategory,
+                  decoration: InputDecoration(
+                    labelText: 'Categoria',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  items: TransactionCategory.values
+                      .map(
+                        (category) => DropdownMenuItem<TransactionCategory>(
+                          value: category,
+                          child: Text(_categoryLabel(category)),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      selectedCategory = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final parsedAmount = _parseCurrencyText(
+                        amountController.text,
+                      );
+
+                      if (titleController.text.isEmpty || parsedAmount <= 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Preencha todos os campos corretamente',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      addTransaction(
+                        widget.userId,
+                        titleController.text,
+                        parsedAmount,
+                        DateTime.now(),
+                        TransactionType.expense,
+                        selectedCategory,
+                      );
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 255, 69, 69),
+                      minimumSize: const Size(double.infinity, 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Salvar',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 String _categoryLabel(TransactionCategory category) {

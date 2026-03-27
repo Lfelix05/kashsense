@@ -23,7 +23,7 @@ class _ProfileSettingState extends State<ProfileSetting> {
     super.initState();
     _loadUser();
   }
-
+  //carrega as infos do usuário
   Future<void> _loadUser() async {
     final user = await getUserForProfile(widget.userId);
     if (user == null) {
@@ -39,7 +39,7 @@ class _ProfileSettingState extends State<ProfileSetting> {
       _photoBase64 = user.profilePictureUrl;
     });
   }
-
+  //função para selecionar a foto de perfil
   Future<void> _pickProfilePhoto() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -90,7 +90,7 @@ class _ProfileSettingState extends State<ProfileSetting> {
     _nameController.dispose();
     super.dispose();
   }
-
+  //salvar as alterações
   Future<void> _saveProfile() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {

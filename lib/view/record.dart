@@ -15,7 +15,7 @@ class RecordView extends StatefulWidget {
 }
 
 class _RecordViewState extends State<RecordView> {
-  static const Map<TransactionCategory, String> _categoryLabels = {
+  static const Map<TransactionCategory, String> _categoryLabels = { // mapeamento de categorias para rótulos legíveis
     TransactionCategory.comida: 'Comida',
     TransactionCategory.transporte: 'Transporte',
     TransactionCategory.lazer: 'Lazer',
@@ -48,7 +48,7 @@ class _RecordViewState extends State<RecordView> {
     );
     return 'R\$ $integerPart,${fixed[1]}';
   }
-
+  //função para construir os itens empilhados do gráfico
   List<BarChartRodStackItem> _buildStackItems(
     Map<TransactionCategory, double> values,
   ) {
@@ -69,7 +69,7 @@ class _RecordViewState extends State<RecordView> {
 
     return items;
   }
-
+  //função para mostrar detalhes da categoria ao tocar na legenda
   void _showCategoryDetails(
     TransactionCategory category,
     Map<TransactionCategory, double> incomeByCategory,
@@ -187,7 +187,7 @@ class _RecordViewState extends State<RecordView> {
       }).toList(),
     );
   }
-
+  //mostra os valores no eixo Y do gráfico
   Widget _leftTitleWidgets(double value, TitleMeta meta) {
     return Text(
       value == 0 ? '0' : value.toStringAsFixed(0),

@@ -49,7 +49,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: StreamBuilder<List<Transaction>>(
+        child: StreamBuilder<List<Transaction>>(  //lista de transações do usuário
           stream: Database.watchTransactions(widget.userId),
           builder: (context, snapshot) {
             if (snapshot.hasError) {

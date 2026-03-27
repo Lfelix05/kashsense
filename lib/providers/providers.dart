@@ -2,7 +2,7 @@ import '../models/transaction_model.dart';
 import '../models/user.dart';
 import '../services/database.dart';
 
-Future<String> addTransaction(
+Future<String> addTransaction(  // função para adicionar uma transação
   String userId,
   String title,
   double amount,
@@ -24,16 +24,16 @@ Future<String> addTransaction(
   return transaction.id;
 }
 
-Future<String> addUser(String name, String email, String password) async {
+Future<String> addUser(String name, String email, String password) async { // função para adicionar um usuário
   Database.addUser(name, email, password);
   return 'Usuário $name adicionado com sucesso!';
 }
 
-Future<List<Transaction>> getTransactionsForUser(String userId) async {
+Future<List<Transaction>> getTransactionsForUser(String userId) async { // função para obter as transações de um usuário
   return Database.getTransactions(userId);
 }
 
-Future<double> getBalanceForUser(String userId) async {
+Future<double> getBalanceForUser(String userId) async { // função para obter o saldo de um usuário
   return Database.getBalance(userId);
 }
 
@@ -52,7 +52,7 @@ Future<String> addBudget(String userId, double amount) async {
 Future<User?> getUserForProfile(String userId) async {
   return Database.getUserById(userId);
 }
-
+// função para atualizar as infos do perfil
 Future<User?> updateUserProfileInfo(
   String userId, {
   required String name,
