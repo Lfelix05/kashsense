@@ -11,6 +11,9 @@ dependencies:
     sdk: flutter
   fl_chart: ^0.70.2
   file_picker: ^10.3.2
+  firebase_auth: ^6.0.2
+  firebase_core: ^4.0.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
