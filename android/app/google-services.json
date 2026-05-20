@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1055445444296",
+    "project_id": "kashsense-a5542",
+    "storage_bucket": "kashsense-a5542.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1055445444296:android:85021c26f3933deabba7fd",
+        "android_client_info": {
+          "package_name": "com.example.kashsense"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8Z1dpmyCVO_dQeBoYSnA1jOKE2IYYcKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
