@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kashsense/services/database.dart';
 import 'package:kashsense/widgets/action_button.dart';
 import 'package:kashsense/widgets/month_graph.dart';
+import '../models/user.dart';
 import '../providers/providers.dart';
 import 'record.dart';
 import '../widgets/add_balance.dart';
@@ -47,7 +48,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
   }
 
   Future<void> _loadBalance() async {
-    final balance = await getBalanceForUser(widget.userId);
+    final balance = await Database.getBalance(widget.userId);
     if (!mounted) {
       return;
     }
@@ -58,10 +59,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = Database.getUserById(widget.userId);
-    final displayName = currentUser.name ?? widget.userName;
-    final profilePhoto = _buildProfilePhoto(currentUser.profilePictureUrl);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -77,7 +74,22 @@ class _SummaryScreenState extends State<SummaryScreen> {
         backgroundColor: const Color.fromARGB(255, 42, 190, 107),
         automaticallyImplyLeading: false,
       ),
-      body: SingleChildScrollView(
+      body: FutureBuilder<User?>(
+        future: Database.getUserById(widget.userId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Erro ao carregar dados do usuário'));
+          } else if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text('Usuário não encontrado'));
+          }
+
+          final currentUser = snapshot.data!;
+          final displayName = currentUser.name.isNotEmpty ? currentUser.name : 'Usuário';
+          final profilePhoto = _buildProfilePhoto(currentUser.profilePictureUrl);
+
+          return SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -294,7 +306,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
             ],
           ),
         ),
+      );
+        },
       ),
     );
   }
 }
+
+      

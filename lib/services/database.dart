@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:kashsense/models/transaction_model.dart';
 import '../models/user.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
 // Simulação de um banco de dados em memória
 class Database {
@@ -56,56 +55,84 @@ class Database {
     }
   } 
 //calcular saldo
-  static double getBalance(String userId) {
-    final transactions = getTransactions(userId);
-    return transactions.fold(0.0, (balance, transaction) {
-      if (transaction.type == TransactionType.income) {
-        return balance + transaction.amount;
+  static Future<double> getBalance(String userId) async {
+    try {
+      final snapshot = await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('transactions')
+          .get();
+
+      double balance = 0;
+      for (var doc in snapshot.docs) {
+        final transaction = Transaction.fromJson(doc.data());
+        if (transaction.type == TransactionType.income) {
+          balance += transaction.amount;
+        } else {
+          balance -= transaction.amount;
+        }
       }
-      return balance - transaction.amount;
-    });
+      return balance;
+    } catch (e) {
+      print('Erro ao calcular saldo: $e');
+      throw Exception('Erro ao calcular saldo');
+    }
   }
 //adicionar saldo
-  static double addBalance(String userId, double amount) {
-    final balanceTransaction = Transaction(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userId: userId,
-      title: 'Adição de saldo',
-      amount: amount,
-      date: DateTime.now(),
-      type: TransactionType.income,
-      category: TransactionCategory.salario,
-    );
-
-    addTransaction(userId, balanceTransaction);
-    return getBalance(userId);
-  }
-
-  static void addTransaction(String userId, Transaction transaction) {
-    transactionsByUser.putIfAbsent(userId, () => []);
-    transactionsByUser[userId]!.add(transaction);
-    _transactionsController.add(userId);
-  }
-
-  static List<Transaction> getTransactions(String userId) {
-    return transactionsByUser[userId] ?? [];
-  }
-
-  static Stream<List<Transaction>> watchTransactions(String userId) async* {
-    yield getTransactions(userId);
-
-    await for (final changedUserId in _transactionsController.stream) {
-      if (changedUserId == userId) {
-        yield getTransactions(userId);
-      }
+  static Future<void> updateBalance(String userId, double newBalance) async {
+    try {
+      await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({'balance': newBalance});
+    } catch (e) {
+      print('Erro ao atualizar saldo: $e');
+      throw Exception('Erro ao atualizar saldo');
     }
   }
 
-  static double getBudgetLimit(String userId) {
-    return budgetLimitByUser[userId] ?? 2000;
+  static Future<void> addTransaction(String userId, Transaction transaction) async {
+    try {
+      await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('transactions')
+          .doc(transaction.id)
+          .set(transaction.toJson());
+
+      _transactionsController.add(userId);
+    } catch (e) {
+      print('Erro ao adicionar transação: $e');
+      throw Exception('Erro ao adicionar transação');
+    }
   }
 
-  static void setBudgetLimit(String userId, double limit) {
-    budgetLimitByUser[userId] = limit;
+  static Future<List<Transaction>> getTransactions(String userId) async {
+    try {
+      final snapshot = await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('transactions')
+          .get();
+
+      return snapshot.docs
+          .map((doc) => Transaction.fromJson(doc.data()))
+            .toList();
+    
+    } catch (e) {
+      print('Erro ao buscar transações: $e');
+      throw Exception('Erro ao buscar transações');
+    }
+  }
+
+  static Stream<List<Transaction>> watchTransactions(String userId) {
+  return firestore.FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('transactions')
+      .snapshots()
+      .map((snapshot) => snapshot.docs
+          .map((doc) => Transaction.fromJson(doc.data()))
+          .toList());
   }
 }

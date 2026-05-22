@@ -117,7 +117,7 @@ class _NotificationsSettState extends State<NotificationsSett> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           decoration: InputDecoration(
             border: InputBorder.none,
             labelText: title,

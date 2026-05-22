@@ -18,7 +18,7 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  bool _isSubmitting = false;
+  final bool _isSubmitting = false;
   bool _obscurePassword = true;
 
   @override

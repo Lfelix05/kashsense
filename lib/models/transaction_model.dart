@@ -56,4 +56,9 @@ class Transaction {
       'category': category.toString(),
     };
   }
+
+  // Aliases para compatibilidade com Firestore
+  factory Transaction.fromJson(Map<String, dynamic> json) => Transaction.fromMap(json);
+
+  Map<String, dynamic> toJson() => toMap();
 }

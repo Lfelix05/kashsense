@@ -187,7 +187,7 @@ class _SecuritySettState extends State<SecuritySett> {
                   vertical: 4,
                 ),
                 child: DropdownButtonFormField<String>(
-                  value: timeout,
+                  initialValue: timeout,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     labelText: 'Timeout automático',
