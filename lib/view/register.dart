@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../providers/validator.dart';
-import '../services/database.dart';
+import '../models/user.dart';
 import 'login.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -11,10 +12,12 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isSubmitting = false;
   bool _obscurePassword = true;
 
@@ -52,40 +55,39 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Future<void> _register() async {
-    final name = _nameController.text.trim();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
+    if (_formKey.currentState!.validate()) {
+      if (_passwordController.text != _confirmPasswordController.text) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("As senhas não coincidem.")));
+        return;
+      }
+      try {
+        final userCredential = await fire_auth.FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: _emailController.text.trim(),
+                password: _passwordController.text);
 
-    setState(() {
-      _isSubmitting = true;
-    });
-
-    if (NameValidator.validate(name) != null ||
-        EmailValidator.validate(email) != null ||
-        PasswordValidator.validate(password) != null ||
-        password != confirmPassword) {
-      setState(() {
-        _isSubmitting = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha todos os campos.')),
-      );
-      return;
-    }
-
-    if (Database.emailExists(email)) {
-      setState(() {
-        _isSubmitting = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Este email já está cadastrado.')),
-      );
-      return;
-    }
-
-    try {
-      
+        final newUser = User(
+          id: userCredential.user!.uid,
+          name: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          profilePictureUrl: null,
+        );
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(newUser.id)
+            .set(newUser.toJson());
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginView()),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Erro ao registrar: $e")));
+      }
     }
   }
 
@@ -141,17 +143,20 @@ class _RegisterViewState extends State<RegisterView> {
                           style: TextStyle(color: Color(0xFF4E5D88)),
                         ),
                         const SizedBox(height: 20),
-                        TextField(
-                          controller: _nameController,
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.person_outline),
-                            labelText: 'Nome',
-                            filled: true,
-                            fillColor: const Color(0xFFF9FBFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
+                        Form(
+                          key: _formKey,
+                          child: TextField(
+                            controller: _nameController,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.person_outline),
+                              labelText: 'Nome',
+                              filled: true,
+                              fillColor: const Color(0xFFF9FBFF),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
                             ),
                           ),
                         ),

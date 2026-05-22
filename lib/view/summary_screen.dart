@@ -59,8 +59,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUser = Database.getUserById(widget.userId);
-    final displayName = currentUser?.name ?? widget.userName;
-    final profilePhoto = _buildProfilePhoto(currentUser?.profilePictureUrl);
+    final displayName = currentUser.name ?? widget.userName;
+    final profilePhoto = _buildProfilePhoto(currentUser.profilePictureUrl);
 
     return Scaffold(
       appBar: AppBar(

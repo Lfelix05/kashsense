@@ -2,77 +2,59 @@ import 'dart:async';
 
 import 'package:kashsense/models/transaction_model.dart';
 import '../models/user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
+import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
 // Simulação de um banco de dados em memória
 class Database {
-  static List<User> users = [];
-
   static Map<String, List<Transaction>> transactionsByUser = {};  // armazenamento das transações por usuário
   static Map<String, double> budgetLimitByUser = {};              // armazenamento dos limites de orçamento por usuário
   static final StreamController<String> _transactionsController =
       StreamController<String>.broadcast();
 
-  static Future<User> addUser(String name, String email, String password) async{
-    await FirebaseAuthService.registerWithEmailAndPassword(email, password);
-    final newUser = User(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      email: email,
-      password: password,
-    );
-    users.add(newUser);
-    return newUser;
-  }
+  static Future<User?> getUserById(String userId) async {
+    try {
+      final doc = await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
 
-  static User? getUserByCredentials(String email, String password) {
-    for (final user in users) {
-      if (user.email == email && user.password == password) {
-        return user;
+      if (doc.exists) {
+        return User.fromJson(doc.data()!);
       }
+    } catch (e) {
+      print('Erro ao buscar usuário: $e');
     }
-    return null;
+    return Future.error('Usuário não encontrado');
   }
 
-  static User? getUserById(String userId) {
-    for (final user in users) {
-      if (user.id == userId) {
-        return user;
+  static Future<User> getUserByEmail(String email) async {
+    try {
+      final querySnapshot = await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return User.fromJson(querySnapshot.docs.first.data());
       }
+    } catch (e) {
+      print('Erro ao buscar usuário por email: $e');
     }
-    return null;
+    return Future.error('Usuário não encontrado');
   }
 
-  static User? updateUserProfile(
-    String userId, {
-    required String name,
-    String? profilePictureUrl,
-  }) {
-    final index = users.indexWhere((user) => user.id == userId);
-    if (index == -1) {
-      return null;
+  static Future<User> updateUser(User user) async {
+    try {
+      await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.id)
+          .set(user.toJson(), firestore.SetOptions(merge: true));
+      return user;
+    } catch (e) {
+      print('Erro ao atualizar usuário: $e');
+      throw Exception('Erro ao atualizar usuário');
     }
-
-    final currentUser = users[index];
-    final updatedUser = User(
-      id: currentUser.id,
-      name: name,
-      email: currentUser.email,
-      password: currentUser.password,
-      profilePictureUrl: profilePictureUrl ?? currentUser.profilePictureUrl,
-    );
-    users[index] = updatedUser;
-    return updatedUser;
-  }
-
-  static bool emailExists(String email) {
-    for (final user in users) {
-      if (user.email == email) {
-        return true;
-      }
-    }
-    return false;
-  }
+  } 
 //calcular saldo
   static double getBalance(String userId) {
     final transactions = getTransactions(userId);

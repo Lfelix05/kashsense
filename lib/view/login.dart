@@ -1,8 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 import 'package:flutter/material.dart';
-import 'package:kashsense/providers/validator.dart';
 import 'package:kashsense/view/master.dart';
-import '../services/database.dart';
 import 'register.dart';
+import '../models/user.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -12,9 +13,10 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isSubmitting = false;
+  bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
@@ -24,52 +26,52 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 // função de login e validação de email e senha
-  void _login() {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-
-    final emailError = EmailValidator.validate(email);
-    if (emailError != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(emailError)));
-      return;
-    }
-
-    final passwordError = PasswordValidator.validate(password);
-    if (passwordError != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(passwordError)));
-      return;
-    }
-
-    setState(() {
-      _isSubmitting = true;
-    });
-
-    final user = Database.getUserByCredentials(email, password);
-
-    if (user == null) {
+  Future<void> _login() async {
+    if(_formKey.currentState != null && !_formKey.currentState!.validate()) {
       setState(() {
-        _isSubmitting = false;
+        _isLoading = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Email ou senha inválidos.')),
-      );
-      return;
+      try {
+        final UserCredential = await fire_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+        final uid = UserCredential.user!.uid;
+        final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        if (doc.exists) {
+          final user = User.fromJson(doc.data()!);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MasterView(userId: user.id, userName: user.name),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Usuário não encontrado.')),
+          );
+        }
+      }
+      on fire_auth.FirebaseAuthException catch (e) {
+        String message = 'Ocorreu um erro ao tentar entrar.';
+        if (e.code == 'user-not-found') {
+          message = 'Nenhum usuário encontrado com esse email.';
+        } else if (e.code == 'wrong-password') {
+          message = 'Senha incorreta. Tente novamente.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ocorreu um erro inesperado.')),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
-
-    setState(() {
-      _isSubmitting = false;
-    });
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MasterView(userId: user.id, userName: user.name),
-      ),
-    );
   }
 
   @override
@@ -143,7 +145,7 @@ class _LoginViewState extends State<LoginView> {
                           controller: _passwordController,
                           obscureText: _obscurePassword,
                           textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => _isSubmitting ? null : _login(),
+                          onSubmitted: (_) => _isLoading ? null : _login(),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.lock_outline),
                             labelText: 'Senha',
@@ -184,7 +186,7 @@ class _LoginViewState extends State<LoginView> {
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton(
-                            onPressed: _isSubmitting ? null : _login,
+                            onPressed: _isLoading ? null : _login,
                             style: FilledButton.styleFrom(
                               backgroundColor: const Color(0xFF2D5FD3),
                               foregroundColor: Colors.white,
@@ -193,7 +195,7 @@ class _LoginViewState extends State<LoginView> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            child: _isSubmitting
+                            child: _isLoading
                                 ? const SizedBox(
                                     width: 22,
                                     height: 22,
