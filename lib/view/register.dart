@@ -14,6 +14,7 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isSubmitting = false;
   bool _obscurePassword = true;
 
@@ -22,6 +23,7 @@ class _RegisterViewState extends State<RegisterView> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -53,6 +55,7 @@ class _RegisterViewState extends State<RegisterView> {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
     setState(() {
       _isSubmitting = true;
@@ -60,7 +63,8 @@ class _RegisterViewState extends State<RegisterView> {
 
     if (NameValidator.validate(name) != null ||
         EmailValidator.validate(email) != null ||
-        PasswordValidator.validate(password) != null) {
+        PasswordValidator.validate(password) != null ||
+        password != confirmPassword) {
       setState(() {
         _isSubmitting = false;
       });
@@ -81,25 +85,7 @@ class _RegisterViewState extends State<RegisterView> {
     }
 
     try {
-      await Future.delayed(const Duration(seconds: 2));
-
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
-        Database.addUser(name, email, password);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cadastro realizado com sucesso!')),
-        );
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      setState(() {
-        _isSubmitting = false;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Falha no cadastro: $e')));
+      
     }
   }
 
@@ -246,7 +232,24 @@ class _RegisterViewState extends State<RegisterView> {
                             color: Color(0xFF6D7B9F),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 14),
+                        TextField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscurePassword,
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (_) =>
+                              _isSubmitting ? null : _register(),
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            labelText: 'Confirmar senha',
+                            filled: true,
+                            fillColor: const Color(0xFFF9FBFF),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton(

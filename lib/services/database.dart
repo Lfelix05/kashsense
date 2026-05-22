@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:kashsense/models/transaction_model.dart';
 import '../models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 // Simulação de um banco de dados em memória
 class Database {
   static List<User> users = [];
@@ -11,17 +13,16 @@ class Database {
   static final StreamController<String> _transactionsController =
       StreamController<String>.broadcast();
 
-  static User addUser(String name, String email, String password) {
-    final user = User(
+  static Future<User> addUser(String name, String email, String password) async{
+    await FirebaseAuthService.registerWithEmailAndPassword(email, password);
+    final newUser = User(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
       email: email,
       password: password,
     );
-    users.add(user);
-    transactionsByUser[user.id] = [];
-    budgetLimitByUser[user.id] = 2000;
-    return user;
+    users.add(newUser);
+    return newUser;
   }
 
   static User? getUserByCredentials(String email, String password) {
