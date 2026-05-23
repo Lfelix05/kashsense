@@ -2,7 +2,8 @@ import '../models/transaction_model.dart';
 import '../models/user.dart';
 import '../services/database.dart';
 
-Future<String> addTransaction(  // função para adicionar uma transação
+Future<String> addTransaction(
+  // função para adicionar uma transação
   String userId,
   String title,
   double amount,
@@ -20,28 +21,35 @@ Future<String> addTransaction(  // função para adicionar uma transação
     category: category,
   );
 
-  Database.addTransaction(userId, transaction);
+  await Database.addTransaction(userId, transaction);
   return transaction.id;
 }
 
-Future<String> addUser(String name, String email, String password) async { // função para adicionar um usuário
-  Database.addUser(name, email, password);
-  return 'Usuário $name adicionado com sucesso!';
+Future<String> addUser(String name, String email, String password) async {
+  // função para adicionar um usuário
+  final user = await Database.addUser(name, email, password);
+  return 'Usuário ${user.name} adicionado com sucesso!';
 }
 
-Future<List<Transaction>> getTransactionsForUser(String userId) async { // função para obter as transações de um usuário
+Future<List<Transaction>> getTransactionsForUser(String userId) async {
+  // função para obter as transações de um usuário
   return Database.getTransactions(userId);
 }
 
-Future<double> getBalanceForUser(String userId) async { // função para obter o saldo de um usuário
+Future<double> getBalanceForUser(String userId) async {
+  // função para obter o saldo de um usuário
   return Database.getBalance(userId);
 }
 
-Future<double> addBalance(String userId, double amount) async {
+Future<double> addBalance(
+  String userId,
+  double amount, {
+  TransactionCategory category = TransactionCategory.salario,
+}) async {
   if (amount <= 0) {
     throw ArgumentError('O valor precisa ser maior que zero.');
   }
-  return Database.addBalance(userId, amount);
+  return Database.addBalance(userId, amount, category: category);
 }
 
 Future<String> addBudget(String userId, double amount) async {
@@ -52,15 +60,21 @@ Future<String> addBudget(String userId, double amount) async {
 Future<User?> getUserForProfile(String userId) async {
   return Database.getUserById(userId);
 }
+
 // função para atualizar as infos do perfil
 Future<User?> updateUserProfileInfo(
   String userId, {
   required String name,
   String? profilePictureUrl,
 }) async {
-  return Database.updateUserProfile(
-    userId,
-    name: name,
-    profilePictureUrl: profilePictureUrl,
-  );
+  try {
+    final updated = await Database.updateUserProfile(
+      userId,
+      name: name,
+      profilePictureUrl: profilePictureUrl,
+    );
+    return updated;
+  } catch (e) {
+    return null;
+  }
 }

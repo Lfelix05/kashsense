@@ -7,6 +7,7 @@ enum TransactionCategory {
   saude,
   contas,
   salario,
+  investimentos,
   outros,
 }
 

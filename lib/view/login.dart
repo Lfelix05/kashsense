@@ -25,52 +25,59 @@ class _LoginViewState extends State<LoginView> {
     _passwordController.dispose();
     super.dispose();
   }
-// função de login e validação de email e senha
+
   Future<void> _login() async {
-    if(_formKey.currentState != null && !_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-      try {
-        final UserCredential = await fire_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
-        final uid = UserCredential.user!.uid;
-        final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-        if (doc.exists) {
-          final user = User.fromJson(doc.data()!);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MasterView(userId: user.id, userName: user.name),
-            ),
+    if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final userCredential = await fire_auth.FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
           );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Usuário não encontrado.')),
-          );
-        }
-      }
-      on fire_auth.FirebaseAuthException catch (e) {
-        String message = 'Ocorreu um erro ao tentar entrar.';
-        if (e.code == 'user-not-found') {
-          message = 'Nenhum usuário encontrado com esse email.';
-        } else if (e.code == 'wrong-password') {
-          message = 'Senha incorreta. Tente novamente.';
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
+
+      final uid = userCredential.user!.uid;
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+      if (doc.exists && doc.data() != null) {
+        final user = User.fromJson(doc.data()!);
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (c) => MasterView(userId: user.id, userName: user.name),
+          ),
         );
-      } catch (e) {
+      } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ocorreu um erro inesperado.')),
+          const SnackBar(content: Text('Usuário não encontrado.')),
         );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
       }
+    } on fire_auth.FirebaseAuthException catch (e) {
+      String message = 'Ocorreu um erro ao tentar entrar.';
+      if (e.code == 'user-not-found') {
+        message = 'Nenhum usuário encontrado com esse email.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Senha incorreta. Tente novamente.';
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ocorreu um erro inesperado.')),
+      );
+    } finally {
+      if (!mounted) return setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
     }
   }
 
@@ -125,50 +132,75 @@ class _LoginViewState extends State<LoginView> {
                           style: TextStyle(color: Color(0xFF4E5D88)),
                         ),
                         const SizedBox(height: 20),
-                        TextField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.email_outlined),
-                            labelText: 'Email',
-                            filled: true,
-                            fillColor: const Color(0xFFF9FBFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        TextField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => _isLoading ? null : _login(),
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.lock_outline),
-                            labelText: 'Senha',
-                            filled: true,
-                            fillColor: const Color(0xFFF9FBFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
+
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                textInputAction: TextInputAction.next,
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.email_outlined),
+                                  labelText: 'Email',
+                                  filled: true,
+                                  fillColor: const Color(0xFFF9FBFF),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                                validator: (v) {
+                                  final value = v?.trim() ?? '';
+                                  if (value.isEmpty) return 'Informe o email.';
+                                  if (!value.contains('@'))
+                                    return 'Email inválido.';
+                                  return null;
+                                },
                               ),
-                            ),
+                              const SizedBox(height: 14),
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: _obscurePassword,
+                                textInputAction: TextInputAction.done,
+                                onFieldSubmitted: (_) =>
+                                    _isLoading ? null : _login(),
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.lock_outline),
+                                  labelText: 'Senha',
+                                  filled: true,
+                                  fillColor: const Color(0xFFF9FBFF),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off_outlined,
+                                    ),
+                                  ),
+                                ),
+                                validator: (v) {
+                                  final value = v ?? '';
+                                  if (value.isEmpty) return 'Informe a senha.';
+                                  if (value.length < 6)
+                                    return 'Senha muito curta.';
+                                  return null;
+                                },
+                              ),
+                            ],
                           ),
                         ),
+
+                        const SizedBox(height: 10),
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(

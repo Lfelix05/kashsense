@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kashsense/widgets/safe_area_condition.dart';
 
+import '../models/transaction_model.dart';
+
+class BalanceAddition {
+  final double amount;
+  final TransactionCategory category;
+
+  const BalanceAddition({required this.amount, required this.category});
+}
+
 class _BankCurrencyInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
@@ -60,6 +69,7 @@ class _AddBalanceSheet extends StatefulWidget {
 
 class _AddBalanceSheetState extends State<_AddBalanceSheet> {
   late final TextEditingController amountController;
+  TransactionCategory selectedCategory = TransactionCategory.salario;
 
   @override
   void initState() {
@@ -119,7 +129,7 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
                   decoration: InputDecoration(
                     prefixText: 'R\$ ',
                     hintText: '0,00',
-                    hintStyle: const TextStyle(color: Colors.white70),
+                    hintStyle: const TextStyle(color: Colors.black),
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.15),
                     border: OutlineInputBorder(
@@ -127,9 +137,49 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.black),
                   keyboardType: TextInputType.number,
                   inputFormatters: [_BankCurrencyInputFormatter()],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Categoria',
+                  style: TextStyle(fontSize: 12, color: Colors.white70),
+                ),
+                const SizedBox(height: 4),
+                DropdownButtonFormField<TransactionCategory>(
+                  initialValue: selectedCategory,
+                  decoration: InputDecoration(
+                    hintStyle: const TextStyle(color: Colors.black),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  items: TransactionCategory.values
+                      .where(
+                        (category) =>
+                            category == TransactionCategory.salario ||
+                            category == TransactionCategory.investimentos,
+                      )
+                      .map(
+                        (category) => DropdownMenuItem<TransactionCategory>(
+                          value: category,
+                          child: Text(_categoryLabel(category)),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      selectedCategory = value;
+                    });
+                  },
+                  style: const TextStyle(color: Colors.black),
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -150,7 +200,13 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
                         return;
                       }
 
-                      Navigator.pop(context, parsedAmount);
+                      Navigator.pop(
+                        context,
+                        BalanceAddition(
+                          amount: parsedAmount,
+                          category: selectedCategory,
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -170,5 +226,26 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
         ),
       ),
     );
+  }
+}
+
+String _categoryLabel(TransactionCategory category) {
+  switch (category) {
+    case TransactionCategory.comida:
+      return 'Comida';
+    case TransactionCategory.transporte:
+      return 'Transporte';
+    case TransactionCategory.lazer:
+      return 'Lazer';
+    case TransactionCategory.saude:
+      return 'Saude';
+    case TransactionCategory.contas:
+      return 'Contas';
+    case TransactionCategory.salario:
+      return 'Salário';
+    case TransactionCategory.investimentos:
+      return 'Investimentos';
+    case TransactionCategory.outros:
+      return 'Outros';
   }
 }

@@ -161,6 +161,11 @@ class _AddTransactionSheetState extends State<_AddTransactionSheet> {
                     ),
                   ),
                   items: TransactionCategory.values
+                      .where(
+                        (category) =>
+                            category != TransactionCategory.salario &&
+                            category != TransactionCategory.investimentos,
+                      )
                       .map(
                         (category) => DropdownMenuItem<TransactionCategory>(
                           value: category,
@@ -196,13 +201,12 @@ class _AddTransactionSheetState extends State<_AddTransactionSheet> {
                         );
                         return;
                       }
-
                       addTransaction(
                         widget.userId,
                         titleController.text,
                         parsedAmount,
                         DateTime.now(),
-                        TransactionType.expense,
+                        TransactionType.income,
                         selectedCategory,
                       );
                       Navigator.pop(context);
@@ -247,7 +251,9 @@ String _categoryLabel(TransactionCategory category) {
     case TransactionCategory.contas:
       return 'Contas';
     case TransactionCategory.salario:
-      return 'Salario';
+      return 'Salário';
+    case TransactionCategory.investimentos:
+      return 'Investimentos';
     case TransactionCategory.outros:
       return 'Outros';
   }

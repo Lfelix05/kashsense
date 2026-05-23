@@ -19,7 +19,19 @@ class _BudgetProgressState extends State<BudgetProgress> {
   @override
   void initState() {
     super.initState();
-    _limit = Database.getBudgetLimit(widget.userId);
+    _loadLimit();
+  }
+
+  Future<void> _loadLimit() async {
+    try {
+      final limit = await Database.getBudgetLimit(widget.userId);
+      if (!mounted) return;
+      setState(() {
+        _limit = limit > 0 ? limit : _defaultLimit;
+      });
+    } catch (_) {
+      // fallback: manter valor padrão
+    }
   }
 
   Future<void> _showSetLimitDialog() async {

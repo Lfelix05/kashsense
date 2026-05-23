@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+
 class User {
   final String id;
   final String name;
@@ -15,9 +16,10 @@ class User {
     this.profilePictureUrl,
   });
 
-  String get hashedPassword {
-    final bytes = utf8.encode(password!); 
-    return sha256.convert(bytes).toString(); 
+  String? get hashedPassword {
+    if (password == null) return null;
+    final bytes = utf8.encode(password!);
+    return sha256.convert(bytes).toString();
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,12 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'email': email, 'password': hashedPassword, 'profilePictureUrl': profilePictureUrl};
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'password': hashedPassword,
+      'profilePictureUrl': profilePictureUrl,
+    };
   }
 }
