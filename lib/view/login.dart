@@ -154,8 +154,9 @@ class _LoginViewState extends State<LoginView> {
                                 validator: (v) {
                                   final value = v?.trim() ?? '';
                                   if (value.isEmpty) return 'Informe o email.';
-                                  if (!value.contains('@'))
+                                  if (!value.contains('@')) {
                                     return 'Email inválido.';
+                                  }
                                   return null;
                                 },
                               ),
@@ -191,8 +192,9 @@ class _LoginViewState extends State<LoginView> {
                                 validator: (v) {
                                   final value = v ?? '';
                                   if (value.isEmpty) return 'Informe a senha.';
-                                  if (value.length < 6)
+                                  if (value.length < 6) {
                                     return 'Senha muito curta.';
+                                  }
                                   return null;
                                 },
                               ),
