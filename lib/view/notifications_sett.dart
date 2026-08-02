@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kashsense/widgets/safe_area_condition.dart';
+import '../theme/app_theme.dart';
 
 class NotificationsSett extends StatefulWidget {
   const NotificationsSett({super.key});
@@ -36,8 +37,9 @@ class _NotificationsSettState extends State<NotificationsSett> {
         title,
         style: const TextStyle(
           fontSize: 18,
+          fontFamily: 'JetBrains Mono',
           fontWeight: FontWeight.bold,
-          color: Color.fromARGB(255, 39, 55, 120),
+          color: AppColors.primaryDark,
         ),
       ),
     );
@@ -52,12 +54,6 @@ class _NotificationsSettState extends State<NotificationsSett> {
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: Color(0xFFE4E9FF)),
-      ),
       child: ListTile(
         title: Row(
           children: [
@@ -71,13 +67,13 @@ class _NotificationsSettState extends State<NotificationsSett> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEAF0FF),
+                  color: AppColors.primarySoft,
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   chipLabel,
                   style: const TextStyle(
-                    color: Color.fromARGB(255, 61, 90, 200),
+                    color: AppColors.chipText,
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
                   ),
@@ -108,12 +104,6 @@ class _NotificationsSettState extends State<NotificationsSett> {
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: Color(0xFFE4E9FF)),
-      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: DropdownButtonFormField<String>(
@@ -144,27 +134,10 @@ class _NotificationsSettState extends State<NotificationsSett> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Notificações',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontFamily: 'JetBrains Mono',
-            fontSize: 24,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 113, 148, 255),
+        title: const Text('Notificações'),
         automaticallyImplyLeading: false,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF4F7FF), Color(0xFFEAF0FF)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+      body: AppBackground(
         child: ListView(
           padding: EdgeInsets.fromLTRB(
             16,
@@ -174,11 +147,6 @@ class _NotificationsSettState extends State<NotificationsSett> {
           ),
           children: [
             Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(color: Color(0xFFD8E2FF)),
-              ),
               child: ListTile(
                 title: const Text(
                   'Ativar notificações',
@@ -291,23 +259,17 @@ class _NotificationsSettState extends State<NotificationsSett> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFFEFF4FF),
+                color: AppColors.primarySoft,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFD4E1FF)),
+                border: Border.all(color: AppColors.cardBorder),
               ),
               child: const Text(
                 'Você receberá no máximo 3 alertas por dia para evitar excesso de notificações.',
-                style: TextStyle(color: Color.fromARGB(255, 53, 73, 145)),
+                style: TextStyle(color: AppColors.chipText),
               ),
             ),
             const SizedBox(height: 14),
             Card(
-              elevation: 0,
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(color: Color(0xFFE4E9FF)),
-              ),
               child: const Padding(
                 padding: EdgeInsets.all(16),
                 child: Column(

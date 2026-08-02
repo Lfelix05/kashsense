@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/transaction_model.dart';
 import '../providers/providers.dart';
+import '../theme/app_theme.dart';
 import 'safe_area_condition.dart';
 
 class _BankCurrencyInputFormatter extends TextInputFormatter {
@@ -103,12 +104,17 @@ class _AddTransactionSheetState extends State<_AddTransactionSheet> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+              border: const Border.fromBorderSide(
+                BorderSide(color: AppColors.cardBorder),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, -4),
                 ),
               ],
             ),
@@ -118,7 +124,8 @@ class _AddTransactionSheetState extends State<_AddTransactionSheet> {
                 const Text(
                   'Adicionar Transação',
                   style: TextStyle(
-                    color: Colors.black87,
+                    fontFamily: 'JetBrains Mono',
+                    color: AppColors.primaryDark,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -127,12 +134,7 @@ class _AddTransactionSheetState extends State<_AddTransactionSheet> {
                 TextField(
                   controller: titleController,
                   textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Título',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Título'),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -143,23 +145,15 @@ class _AddTransactionSheetState extends State<_AddTransactionSheet> {
                   onTap: () => _moveCursorToEnd(amountController),
                   onChanged: (_) => _moveCursorToEnd(amountController),
                   inputFormatters: [_BankCurrencyInputFormatter()],
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     prefixText: 'R\$ ',
                     labelText: 'Valor',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<TransactionCategory>(
                   initialValue: selectedCategory,
-                  decoration: InputDecoration(
-                    labelText: 'Categoria',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Categoria'),
                   items: TransactionCategory.values
                       .where(
                         (category) =>
@@ -183,50 +177,36 @@ class _AddTransactionSheetState extends State<_AddTransactionSheet> {
                   },
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final parsedAmount = _parseCurrencyText(
-                        amountController.text,
-                      );
+                FilledButton(
+                  onPressed: () {
+                    final parsedAmount = _parseCurrencyText(
+                      amountController.text,
+                    );
 
-                      if (titleController.text.isEmpty || parsedAmount <= 0) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Preencha todos os campos corretamente',
-                            ),
+                    if (titleController.text.isEmpty || parsedAmount <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Preencha todos os campos corretamente',
                           ),
-                        );
-                        return;
-                      }
-                      addTransaction(
-                        widget.userId,
-                        titleController.text,
-                        parsedAmount,
-                        DateTime.now(),
-                        TransactionType.income,
-                        selectedCategory,
+                        ),
                       );
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 255, 69, 69),
-                      minimumSize: const Size(double.infinity, 48),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Salvar',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                      return;
+                    }
+                    addTransaction(
+                      widget.userId,
+                      titleController.text,
+                      parsedAmount,
+                      DateTime.now(),
+                      TransactionType.income,
+                      selectedCategory,
+                    );
+                    Navigator.pop(context);
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.danger,
                   ),
+                  child: const Text('Salvar'),
                 ),
                 const SizedBox(height: 16),
               ],

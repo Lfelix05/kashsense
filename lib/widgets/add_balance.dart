@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:kashsense/widgets/safe_area_condition.dart';
 
 import '../models/transaction_model.dart';
+import '../theme/app_theme.dart';
 
 class BalanceAddition {
   final double amount;
@@ -104,8 +105,8 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              gradient: AppGradients.primary,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -114,6 +115,7 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
                 const Text(
                   'Adicionar Saldo',
                   style: TextStyle(
+                    fontFamily: 'JetBrains Mono',
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -129,20 +131,20 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
                   decoration: InputDecoration(
                     prefixText: 'R\$ ',
                     hintText: '0,00',
-                    hintStyle: const TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black54),
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.15),
+                    fillColor: Colors.white.withValues(alpha: 0.9),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  style: const TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black87),
                   keyboardType: TextInputType.number,
                   inputFormatters: [_BankCurrencyInputFormatter()],
                 ),
                 const SizedBox(height: 6),
-                Text(
+                const Text(
                   'Categoria',
                   style: TextStyle(fontSize: 12, color: Colors.white70),
                 ),
@@ -150,11 +152,10 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
                 DropdownButtonFormField<TransactionCategory>(
                   initialValue: selectedCategory,
                   decoration: InputDecoration(
-                    hintStyle: const TextStyle(color: Colors.black),
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.15),
+                    fillColor: Colors.white.withValues(alpha: 0.9),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -179,46 +180,38 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
                       selectedCategory = value;
                     });
                   },
-                  style: const TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black87),
                 ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final parsedAmount = _parseCurrencyText(
-                        amountController.text,
-                      );
-                      if (parsedAmount <= 0) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Digite um valor valido para adicionar.',
-                            ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () {
+                    final parsedAmount = _parseCurrencyText(
+                      amountController.text,
+                    );
+                    if (parsedAmount <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Digite um valor valido para adicionar.',
                           ),
-                        );
-                        return;
-                      }
-
-                      Navigator.pop(
-                        context,
-                        BalanceAddition(
-                          amount: parsedAmount,
-                          category: selectedCategory,
                         ),
                       );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                      return;
+                    }
+
+                    Navigator.pop(
+                      context,
+                      BalanceAddition(
+                        amount: parsedAmount,
+                        category: selectedCategory,
                       ),
-                    ),
-                    child: const Text(
-                      'Adicionar',
-                      style: TextStyle(color: Colors.blueAccent),
-                    ),
+                    );
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.primary,
                   ),
+                  child: const Text('Adicionar'),
                 ),
               ],
             ),

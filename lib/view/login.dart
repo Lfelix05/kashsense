@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kashsense/view/master.dart';
 import 'register.dart';
 import '../models/user.dart';
+import '../theme/app_theme.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -88,18 +89,19 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Entrar'),
-        backgroundColor: const Color(0xFFF4F8FF),
+        backgroundColor: AppColors.backgroundStart,
+        foregroundColor: AppColors.primaryDark,
+        titleTextStyle: const TextStyle(
+          fontFamily: 'JetBrains Mono',
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: AppColors.primaryDark,
+        ),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFF4F8FF), Color(0xFFE7EEFF)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
+          decoration: const BoxDecoration(gradient: AppGradients.background),
           child: Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomInset),
@@ -109,7 +111,7 @@ class _LoginViewState extends State<LoginView> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(22),
-                    side: const BorderSide(color: Color(0xFFDCE6FF)),
+                    side: const BorderSide(color: AppColors.cardBorder),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(24),
@@ -123,13 +125,13 @@ class _LoginViewState extends State<LoginView> {
                             fontFamily: 'JetBrains Mono',
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF223F9B),
+                            color: AppColors.primaryDark,
                           ),
                         ),
                         const SizedBox(height: 8),
                         const Text(
                           'Acesse sua conta e continue acompanhando sua evolução financeira.',
-                          style: TextStyle(color: Color(0xFF4E5D88)),
+                          style: TextStyle(color: AppColors.textMuted),
                         ),
                         const SizedBox(height: 20),
 
@@ -141,15 +143,9 @@ class _LoginViewState extends State<LoginView> {
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 textInputAction: TextInputAction.next,
-                                decoration: InputDecoration(
-                                  prefixIcon: const Icon(Icons.email_outlined),
+                                decoration: const InputDecoration(
+                                  prefixIcon: Icon(Icons.email_outlined),
                                   labelText: 'Email',
-                                  filled: true,
-                                  fillColor: const Color(0xFFF9FBFF),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
-                                  ),
                                 ),
                                 validator: (v) {
                                   final value = v?.trim() ?? '';
@@ -170,12 +166,6 @@ class _LoginViewState extends State<LoginView> {
                                 decoration: InputDecoration(
                                   prefixIcon: const Icon(Icons.lock_outline),
                                   labelText: 'Senha',
-                                  filled: true,
-                                  fillColor: const Color(0xFFF9FBFF),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
-                                  ),
                                   suffixIcon: IconButton(
                                     onPressed: () {
                                       setState(() {
@@ -217,35 +207,18 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton(
-                            onPressed: _isLoading ? null : _login,
-                            style: FilledButton.styleFrom(
-                              backgroundColor: const Color(0xFF2D5FD3),
-                              foregroundColor: Colors.white,
-                              minimumSize: const Size(double.infinity, 52),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.4,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Entrar',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
+                        FilledButton(
+                          onPressed: _isLoading ? null : _login,
+                          child: _isLoading
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.4,
+                                    color: Colors.white,
                                   ),
-                          ),
+                                )
+                              : const Text('Entrar'),
                         ),
                         const SizedBox(height: 10),
                         Row(

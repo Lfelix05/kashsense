@@ -59,7 +59,8 @@ class Transaction {
   }
 
   // Aliases para compatibilidade com Firestore
-  factory Transaction.fromJson(Map<String, dynamic> json) => Transaction.fromMap(json);
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      Transaction.fromMap(json);
 
   Map<String, dynamic> toJson() => toMap();
 }

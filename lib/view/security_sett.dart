@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kashsense/widgets/safe_area_condition.dart';
+import '../theme/app_theme.dart';
 
 class SecuritySett extends StatefulWidget {
   const SecuritySett({super.key});
@@ -32,8 +33,9 @@ class _SecuritySettState extends State<SecuritySett> {
         title,
         style: const TextStyle(
           fontSize: 18,
+          fontFamily: 'JetBrains Mono',
           fontWeight: FontWeight.bold,
-          color: Color.fromARGB(255, 39, 55, 120),
+          color: AppColors.primaryDark,
         ),
       ),
     );
@@ -47,11 +49,6 @@ class _SecuritySettState extends State<SecuritySett> {
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: Color(0xFFE4E9FF)),
-      ),
       child: ListTile(
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         subtitle: Padding(
@@ -73,27 +70,10 @@ class _SecuritySettState extends State<SecuritySett> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Segurança',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontFamily: 'JetBrains Mono',
-            fontSize: 24,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 113, 148, 255),
+        title: const Text('Segurança'),
         automaticallyImplyLeading: false,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF5F7FF), Color(0xFFEAF0FF)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+      body: AppBackground(
         child: ListView(
           padding: EdgeInsets.fromLTRB(
             16,
@@ -103,11 +83,6 @@ class _SecuritySettState extends State<SecuritySett> {
           ),
           children: [
             Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(color: Color(0xFFD8E2FF)),
-              ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -115,10 +90,7 @@ class _SecuritySettState extends State<SecuritySett> {
                   children: [
                     const Row(
                       children: [
-                        Icon(
-                          Icons.verified_user,
-                          color: Color.fromARGB(255, 61, 90, 200),
-                        ),
+                        Icon(Icons.verified_user, color: AppColors.primary),
                         SizedBox(width: 8),
                         Text(
                           'Nível de segurança: Bom',
@@ -135,16 +107,14 @@ class _SecuritySettState extends State<SecuritySett> {
                       child: const LinearProgressIndicator(
                         value: 0.72,
                         minHeight: 9,
-                        color: Color.fromARGB(255, 61, 90, 200),
-                        backgroundColor: Color(0xFFDDE6FF),
+                        color: AppColors.primary,
+                        backgroundColor: AppColors.primarySoft,
                       ),
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       'Ative todos os recursos para chegar ao nível Excelente.',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 88, 101, 154),
-                      ),
+                      style: TextStyle(color: AppColors.textMuted),
                     ),
                   ],
                 ),
@@ -176,11 +146,6 @@ class _SecuritySettState extends State<SecuritySett> {
             ),
             Card(
               margin: const EdgeInsets.only(bottom: 10),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-                side: const BorderSide(color: Color(0xFFE4E9FF)),
-              ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -235,11 +200,6 @@ class _SecuritySettState extends State<SecuritySett> {
             const SizedBox(height: 10),
             _sectionTitle('Sessões e dispositivos'),
             Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-                side: const BorderSide(color: Color(0xFFE4E9FF)),
-              ),
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Column(
@@ -266,11 +226,6 @@ class _SecuritySettState extends State<SecuritySett> {
             const SizedBox(height: 14),
             _sectionTitle('Atividade recente'),
             Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-                side: const BorderSide(color: Color(0xFFE4E9FF)),
-              ),
               child: const Padding(
                 padding: EdgeInsets.all(14),
                 child: Column(
@@ -286,10 +241,7 @@ class _SecuritySettState extends State<SecuritySett> {
                     ListTile(
                       dense: true,
                       contentPadding: EdgeInsets.zero,
-                      leading: Icon(
-                        Icons.pin,
-                        color: Color.fromARGB(255, 61, 90, 200),
-                      ),
+                      leading: Icon(Icons.pin, color: AppColors.primary),
                       title: Text('PIN alterado'),
                       subtitle: Text('Ontem, 18:10'),
                     ),

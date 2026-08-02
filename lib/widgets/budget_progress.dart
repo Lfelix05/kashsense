@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kashsense/models/transaction_model.dart';
 import 'package:kashsense/services/database.dart';
+import '../theme/app_theme.dart';
 
 class BudgetProgress extends StatefulWidget {
   final String userId;
@@ -98,9 +99,9 @@ class _BudgetProgressState extends State<BudgetProgress> {
   }
 
   Color _barColor(double ratio) {
-    if (ratio >= 0.9) return Colors.red;
+    if (ratio >= 0.9) return AppColors.danger;
     if (ratio >= 0.65) return Colors.orange;
-    return Colors.blue;
+    return AppColors.primary;
   }
 
   String _formatCurrency(double value) {
@@ -150,10 +151,11 @@ class _BudgetProgressState extends State<BudgetProgress> {
                 children: [
                   Text(
                     widget.label,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
+                      fontFamily: 'JetBrains Mono',
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                      color: AppColors.primaryDark,
                     ),
                   ),
                   Text(
@@ -168,9 +170,9 @@ class _BudgetProgressState extends State<BudgetProgress> {
                 ],
               ),
               const SizedBox(height: 6),
-              Text(
+              const Text(
                 'Toque para alterar o limite mensal',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 12, color: AppColors.textFaint),
               ),
               const SizedBox(height: 10),
               ClipRRect(
@@ -178,7 +180,7 @@ class _BudgetProgressState extends State<BudgetProgress> {
                 child: LinearProgressIndicator(
                   value: ratio,
                   minHeight: 14,
-                  backgroundColor: Colors.grey[200],
+                  backgroundColor: AppColors.primarySoft,
                   valueColor: AlwaysStoppedAnimation<Color>(color),
                 ),
               ),
@@ -188,17 +190,17 @@ class _BudgetProgressState extends State<BudgetProgress> {
                 children: [
                   Text(
                     'Gasto: ${_formatCurrency(spent)}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[600],
+                      color: AppColors.textMuted,
                       fontFamily: 'JetBrains Mono',
                     ),
                   ),
                   Text(
                     'Limite: ${_formatCurrency(_limit)}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[600],
+                      color: AppColors.textMuted,
                       fontFamily: 'JetBrains Mono',
                     ),
                   ),
@@ -210,15 +212,15 @@ class _BudgetProgressState extends State<BudgetProgress> {
                   children: [
                     const Icon(
                       Icons.warning_amber_rounded,
-                      color: Colors.red,
+                      color: AppColors.danger,
                       size: 16,
                     ),
                     const SizedBox(width: 4),
-                    Text(
+                    const Text(
                       'Atenção: você está próximo do limite!',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.red[700],
+                        color: AppColors.danger,
                         fontFamily: 'JetBrains Mono',
                       ),
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 import 'login.dart';
 import 'register.dart';
 
@@ -11,13 +12,7 @@ class Home extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF4F8FF), Color(0xFFE7EEFF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        decoration: const BoxDecoration(gradient: AppGradients.background),
         child: SafeArea(
           child: Stack(
             children: [
@@ -54,7 +49,7 @@ class Home extends StatelessWidget {
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
-                        side: const BorderSide(color: Color(0xFFDCE6FF)),
+                        side: const BorderSide(color: AppColors.cardBorder),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(28),
@@ -66,7 +61,7 @@ class Home extends StatelessWidget {
                               children: [
                                 Icon(
                                   Icons.account_balance_wallet_rounded,
-                                  color: Color(0xFF2D5FD3),
+                                  color: AppColors.primary,
                                   size: 32,
                                 ),
                                 SizedBox(width: 10),
@@ -76,7 +71,7 @@ class Home extends StatelessWidget {
                                     fontFamily: 'JetBrains Mono',
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF203A8F),
+                                    color: AppColors.primaryDark,
                                   ),
                                 ),
                               ],
@@ -87,7 +82,7 @@ class Home extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 15,
                                 height: 1.4,
-                                color: Color(0xFF42507B),
+                                color: AppColors.textMuted,
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -110,65 +105,28 @@ class Home extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 28),
-                            SizedBox(
-                              width: double.infinity,
-                              child: FilledButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginView(),
-                                    ),
-                                  );
-                                },
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: const Color(0xFF2D5FD3),
-                                  foregroundColor: Colors.white,
-                                  minimumSize: const Size(double.infinity, 52),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
+                            FilledButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginView(),
                                   ),
-                                ),
-                                child: const Text(
-                                  'Entrar',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17,
-                                  ),
-                                ),
-                              ),
+                                );
+                              },
+                              child: const Text('Entrar'),
                             ),
                             const SizedBox(height: 10),
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const RegisterView(),
-                                    ),
-                                  );
-                                },
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF2D5FD3),
-                                  side: const BorderSide(
-                                    color: Color(0xFFB9CCFF),
+                            OutlinedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const RegisterView(),
                                   ),
-                                  minimumSize: const Size(double.infinity, 52),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Criar conta',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
+                                );
+                              },
+                              child: const Text('Criar conta'),
                             ),
                             const SizedBox(height: 18),
                             Text(
@@ -204,18 +162,18 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF4FF),
+        color: AppColors.primarySoft,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 15, color: const Color(0xFF2D5FD3)),
+          Icon(icon, size: 15, color: AppColors.primary),
           const SizedBox(width: 6),
           Text(
             label,
             style: const TextStyle(
-              color: Color(0xFF2D4FAD),
+              color: AppColors.chipText,
               fontWeight: FontWeight.w600,
               fontSize: 12,
             ),

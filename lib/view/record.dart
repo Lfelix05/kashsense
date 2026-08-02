@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:kashsense/models/transaction_model.dart';
 import 'package:kashsense/services/database.dart';
+import '../theme/app_theme.dart';
 
 class RecordView extends StatefulWidget {
   final String userId;
@@ -15,7 +16,8 @@ class RecordView extends StatefulWidget {
 }
 
 class _RecordViewState extends State<RecordView> {
-  static const Map<TransactionCategory, String> _categoryLabels = { // mapeamento de categorias para rótulos legíveis
+  static const Map<TransactionCategory, String> _categoryLabels = {
+    // mapeamento de categorias para rótulos legíveis
     TransactionCategory.comida: 'Comida',
     TransactionCategory.transporte: 'Transporte',
     TransactionCategory.lazer: 'Lazer',
@@ -50,6 +52,7 @@ class _RecordViewState extends State<RecordView> {
     );
     return 'R\$ $integerPart,${fixed[1]}';
   }
+
   //função para construir os itens empilhados do gráfico
   List<BarChartRodStackItem> _buildStackItems(
     Map<TransactionCategory, double> values,
@@ -71,6 +74,7 @@ class _RecordViewState extends State<RecordView> {
 
     return items;
   }
+
   //função para mostrar detalhes da categoria ao tocar na legenda
   void _showCategoryDetails(
     TransactionCategory category,
@@ -189,6 +193,7 @@ class _RecordViewState extends State<RecordView> {
       }).toList(),
     );
   }
+
   //mostra os valores no eixo Y do gráfico
   Widget _leftTitleWidgets(double value, TitleMeta meta) {
     return Text(
@@ -201,209 +206,207 @@ class _RecordViewState extends State<RecordView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Registro',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontFamily: 'JetBrains Mono',
-            fontSize: 24,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: const Color.fromARGB(255, 255, 113, 113),
-        centerTitle: true,
-        automaticallyImplyLeading: true,
+        title: const Text('Registro'),
+        backgroundColor: AppColors.danger,
       ),
-      body: StreamBuilder<List<Transaction>>(
-        stream: Database.watchTransactions(widget.userId),
-        builder: (context, snapshot) {
-          final transactions = snapshot.data ?? const <Transaction>[];
-          final monthTransactions = transactions
-              .where((transaction) => _isCurrentMonth(transaction.date))
-              .toList();
+      body: AppBackground(
+        child: StreamBuilder<List<Transaction>>(
+          stream: Database.watchTransactions(widget.userId),
+          builder: (context, snapshot) {
+            final transactions = snapshot.data ?? const <Transaction>[];
+            final monthTransactions = transactions
+                .where((transaction) => _isCurrentMonth(transaction.date))
+                .toList();
 
-          final incomeByCategory = {
-            for (final category in TransactionCategory.values) category: 0.0,
-          };
-          final expenseByCategory = {
-            for (final category in TransactionCategory.values) category: 0.0,
-          };
+            final incomeByCategory = {
+              for (final category in TransactionCategory.values) category: 0.0,
+            };
+            final expenseByCategory = {
+              for (final category in TransactionCategory.values) category: 0.0,
+            };
 
-          for (final transaction in monthTransactions) {
-            if (transaction.type == TransactionType.income) {
-              incomeByCategory[transaction.category] =
-                  (incomeByCategory[transaction.category] ?? 0) +
-                  transaction.amount;
-            } else {
-              expenseByCategory[transaction.category] =
-                  (expenseByCategory[transaction.category] ?? 0) +
-                  transaction.amount;
+            for (final transaction in monthTransactions) {
+              if (transaction.type == TransactionType.income) {
+                incomeByCategory[transaction.category] =
+                    (incomeByCategory[transaction.category] ?? 0) +
+                    transaction.amount;
+              } else {
+                expenseByCategory[transaction.category] =
+                    (expenseByCategory[transaction.category] ?? 0) +
+                    transaction.amount;
+              }
             }
-          }
 
-          final totalIncome = incomeByCategory.values.fold(
-            0.0,
-            (sum, value) => sum + value,
-          );
-          final totalExpense = expenseByCategory.values.fold(
-            0.0,
-            (sum, value) => sum + value,
-          );
+            final totalIncome = incomeByCategory.values.fold(
+              0.0,
+              (sum, value) => sum + value,
+            );
+            final totalExpense = expenseByCategory.values.fold(
+              0.0,
+              (sum, value) => sum + value,
+            );
 
-          final maxTotal = math.max(totalIncome, totalExpense).toDouble();
-          final maxY = maxTotal <= 0 ? 100.0 : maxTotal * 1.2;
+            final maxTotal = math.max(totalIncome, totalExpense).toDouble();
+            final maxY = maxTotal <= 0 ? 100.0 : maxTotal * 1.2;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Mês Atual',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Mês Atual',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'JetBrains Mono',
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryDark,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Receitas x Despesas por categoria',
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-                const SizedBox(height: 16),
-                Card(
-                  elevation: 8,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Receitas x Despesas por categoria',
+                    style: TextStyle(color: AppColors.textMuted),
                   ),
-
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 20, 12, 12),
-                    child: SizedBox(
-                      height: 360,
-                      child: BarChart(
-                        BarChartData(
-                          maxY: maxY,
-                          minY: 0,
-                          gridData: FlGridData(show: true),
-                          borderData: FlBorderData(show: false),
-                          titlesData: FlTitlesData(
-                            topTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            rightTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 34,
-                                interval: maxY / 4,
-                                getTitlesWidget: _leftTitleWidgets,
+                  const SizedBox(height: 16),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 20, 12, 12),
+                      child: SizedBox(
+                        height: 360,
+                        child: BarChart(
+                          BarChartData(
+                            maxY: maxY,
+                            minY: 0,
+                            gridData: FlGridData(show: true),
+                            borderData: FlBorderData(show: false),
+                            titlesData: FlTitlesData(
+                              topTitles: const AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
                               ),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  String text = '';
-                                  if (value == 0) {
-                                    text = 'Receitas';
-                                  } else if (value == 1) {
-                                    text = 'Despesas';
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 8),
-                                    child: Text(
-                                      text,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
+                              rightTitles: const AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  reservedSize: 34,
+                                  interval: maxY / 4,
+                                  getTitlesWidget: _leftTitleWidgets,
+                                ),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) {
+                                    String text = '';
+                                    if (value == 0) {
+                                      text = 'Receitas';
+                                    } else if (value == 1) {
+                                      text = 'Despesas';
+                                    }
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: Text(
+                                        text,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
                             ),
+                            barGroups: [
+                              BarChartGroupData(
+                                x: 0,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: totalIncome,
+                                    width: 48,
+                                    borderRadius: BorderRadius.circular(4),
+                                    rodStackItems: _buildStackItems(
+                                      incomeByCategory,
+                                    ),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      233,
+                                      255,
+                                      223,
+                                    ).withOpacity(0.35),
+                                  ),
+                                ],
+                              ),
+                              BarChartGroupData(
+                                x: 1,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: totalExpense,
+                                    width: 48,
+                                    borderRadius: BorderRadius.circular(4),
+                                    rodStackItems: _buildStackItems(
+                                      expenseByCategory,
+                                    ),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      233,
+                                      218,
+                                      218,
+                                    ).withOpacity(0.35),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          barGroups: [
-                            BarChartGroupData(
-                              x: 0,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: totalIncome,
-                                  width: 48,
-                                  borderRadius: BorderRadius.circular(4),
-                                  rodStackItems: _buildStackItems(
-                                    incomeByCategory,
-                                  ),
-                                  color: const Color.fromARGB(255, 233, 255, 223).withOpacity(0.35),
-                                ),
-                              ],
-                            ),
-                            BarChartGroupData(
-                              x: 1,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: totalExpense,
-                                  width: 48,
-                                  borderRadius: BorderRadius.circular(4),
-                                  rodStackItems: _buildStackItems(
-                                    expenseByCategory,
-                                  ),
-                                  color: const Color.fromARGB(255, 233, 218, 218).withOpacity(0.35),
-                                ),
-                              ],
-                            ),
-                          ],
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total receita: ${_formatCurrency(totalIncome)}',
-                      style: const TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total receita: ${_formatCurrency(totalIncome)}',
+                        style: const TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                      Text(
+                        'Total despesas: ${_formatCurrency(totalExpense)}',
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Categorias (toque para detalhes)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryDark,
                     ),
-                    Text(
-                      'Total despesas: ${_formatCurrency(totalExpense)}',
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildLegend(incomeByCategory, expenseByCategory),
+                  if (monthTransactions.isEmpty) ...[
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Sem movimentações neste mês para exibir no gráfico.',
+                      style: TextStyle(color: AppColors.textMuted),
                     ),
                   ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Categorias (toque para detalhes)',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[800],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildLegend(incomeByCategory, expenseByCategory),
-                if (monthTransactions.isEmpty) ...[
-                  const SizedBox(height: 14),
-                  Text(
-                    'Sem movimentações neste mês para exibir no gráfico.',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
                 ],
-              ],
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

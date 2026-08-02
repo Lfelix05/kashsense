@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:kashsense/providers/providers.dart';
+import '../theme/app_theme.dart';
 
 class ProfileSetting extends StatefulWidget {
   final String userId;
@@ -23,6 +24,7 @@ class _ProfileSettingState extends State<ProfileSetting> {
     super.initState();
     _loadUser();
   }
+
   //carrega as infos do usuário
   Future<void> _loadUser() async {
     final user = await getUserForProfile(widget.userId);
@@ -39,6 +41,7 @@ class _ProfileSettingState extends State<ProfileSetting> {
       _photoBase64 = user.profilePictureUrl;
     });
   }
+
   //função para selecionar a foto de perfil
   Future<void> _pickProfilePhoto() async {
     final result = await FilePicker.platform.pickFiles(
@@ -90,6 +93,7 @@ class _ProfileSettingState extends State<ProfileSetting> {
     _nameController.dispose();
     super.dispose();
   }
+
   //salvar as alterações
   Future<void> _saveProfile() async {
     final name = _nameController.text.trim();
@@ -134,65 +138,84 @@ class _ProfileSettingState extends State<ProfileSetting> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Configurações de Perfil')),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Foto de perfil',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              Center(
-                child: CircleAvatar(
-                  radius: 44,
-                  backgroundImage: _buildPhotoProvider(),
-                  child: _buildPhotoProvider() == null
-                      ? const Icon(Icons.person, size: 40)
-                      : null,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Center(
-                child: OutlinedButton.icon(
-                  onPressed: _pickProfilePhoto,
-                  icon: const Icon(Icons.photo_library_outlined),
-                  label: const Text('Escolher foto da galeria'),
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Nome',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: 'Digite seu nome',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+      body: AppBackground(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Foto de perfil',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryDark,
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
+                const SizedBox(height: 12),
+                Center(
+                  child: CircleAvatar(
+                    radius: 44,
+                    backgroundColor: AppColors.primarySoft,
+                    backgroundImage: _buildPhotoProvider(),
+                    child: _buildPhotoProvider() == null
+                        ? const Icon(
+                            Icons.person,
+                            size: 40,
+                            color: AppColors.primary,
+                          )
+                        : null,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: OutlinedButton.icon(
+                    onPressed: _pickProfilePhoto,
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: Size.zero,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                    icon: const Icon(Icons.photo_library_outlined),
+                    label: const Text('Escolher foto da galeria'),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Nome',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryDark,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    hintText: 'Digite seu nome',
+                  ),
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
                   onPressed: _isSaving ? null : _saveProfile,
                   icon: _isSaving
                       ? const SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : const Icon(Icons.save),
                   label: Text(_isSaving ? 'Salvando...' : 'Salvar alterações'),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

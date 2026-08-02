@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/ai_service.dart';
+import '../theme/app_theme.dart';
 
 class _ChatMessage {
   final String text;
@@ -158,7 +159,7 @@ class _AiChatBubbleState extends State<AiChatBubble> {
             child: Material(
               elevation: 6,
               shape: const CircleBorder(),
-              color: Colors.blueAccent,
+              color: AppColors.primary,
               child: SizedBox(
                 width: _bubbleSize,
                 height: _bubbleSize,
@@ -205,7 +206,7 @@ class _ChatPanel extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            color: Colors.blueAccent,
+            color: AppColors.primary,
             child: Row(
               children: [
                 const Icon(
@@ -265,8 +266,8 @@ class _ChatPanel extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: message.isUser
-                                ? Colors.blueAccent
-                                : const Color(0xFFEFF4FF),
+                                ? AppColors.primary
+                                : AppColors.primarySoft,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -301,7 +302,7 @@ class _ChatPanel extends StatelessWidget {
                         vertical: 8,
                       ),
                       filled: true,
-                      fillColor: const Color(0xFFF4F8FF),
+                      fillColor: AppColors.backgroundStart,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide.none,
@@ -317,7 +318,7 @@ class _ChatPanel extends StatelessWidget {
                           height: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(Icons.send, color: Colors.blueAccent),
+                      : const Icon(Icons.send, color: AppColors.primary),
                   onPressed: isSending ? null : onSend,
                 ),
               ],
