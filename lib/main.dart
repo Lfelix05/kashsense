@@ -18,15 +18,15 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     await FirebaseAppCheck.instance.activate(
-    // Set appleProvider to `AppleProvider.debug`
-    appleProvider: AppleProvider.debug,
-  );
+      androidProvider:
+          AndroidProvider.debug, // trocar para playIntegrity em produção
+      appleProvider: AppleProvider.debug, // trocar para appAttest em produção
+    );
   } catch (e) {
     debugPrint('Error initializing Firebase: $e');
   }
 
   runApp(const MainApp());
-  
 }
 
 class MainApp extends StatelessWidget {

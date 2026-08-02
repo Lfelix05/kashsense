@@ -367,14 +367,14 @@ class _RecordViewState extends State<RecordView> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Total income: ${_formatCurrency(totalIncome)}',
+                      'Total receita: ${_formatCurrency(totalIncome)}',
                       style: const TextStyle(
                         color: Colors.green,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      'Total expenses: ${_formatCurrency(totalExpense)}',
+                      'Total despesas: ${_formatCurrency(totalExpense)}',
                       style: const TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.bold,
