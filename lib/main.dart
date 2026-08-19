@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
-
 import '../view/home.dart';
 import '../theme/app_theme.dart';
 
@@ -17,11 +15,6 @@ Future<void> main() async {
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
-    );
-    await FirebaseAppCheck.instance.activate(
-      androidProvider:
-          AndroidProvider.debug, // trocar para playIntegrity em produção
-      appleProvider: AppleProvider.debug, // trocar para appAttest em produção
     );
   } catch (e) {
     debugPrint('Error initializing Firebase: $e');

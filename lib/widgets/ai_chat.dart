@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/ai_service.dart';
+import '../services/finance_context_service.dart';
 import '../theme/app_theme.dart';
 
 class _ChatMessage {
@@ -26,9 +27,13 @@ class _AiChatBubbleState extends State<AiChatBubble> {
   static const double _panelWidth = 300;
   static const double _panelHeight = 400;
 
+  static const int _maxHistoryMessages = 10;
+
   Offset? _bubbleOffset;
   bool _isOpen = false;
   bool _isSending = false;
+  bool _isLoadingSummary = false;
+  String? _financialSummary;
   final List<_ChatMessage> _messages = [];
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -42,6 +47,44 @@ class _AiChatBubbleState extends State<AiChatBubble> {
 
   void _toggleOpen() {
     setState(() => _isOpen = !_isOpen);
+    if (_isOpen) {
+      _loadFinancialSummary();
+    }
+  }
+
+  // busca o resumo financeiro do usuário uma única vez por sessão do painel
+  Future<void> _loadFinancialSummary() async {
+    if (_financialSummary != null || _isLoadingSummary) {
+      return;
+    }
+    setState(() => _isLoadingSummary = true);
+    try {
+      final summary = await FinanceContextService.buildSummary(
+        widget.userId,
+      );
+      if (mounted) {
+        setState(() => _financialSummary = summary);
+      }
+    } catch (e) {
+      // segue sem contexto financeiro se a busca falhar
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingSummary = false);
+      }
+    }
+  }
+
+  // converte as últimas mensagens da conversa para o formato de histórico
+  List<Map<String, String>> _buildHistory() {
+    final relevant = _messages.length > _maxHistoryMessages
+        ? _messages.sublist(_messages.length - _maxHistoryMessages)
+        : _messages;
+    return relevant
+        .where((m) => m.text.isNotEmpty)
+        .map(
+          (m) => {'role': m.isUser ? 'user' : 'assistant', 'content': m.text},
+        )
+        .toList();
   }
 
   void _scrollToBottom() {
@@ -63,6 +106,8 @@ class _AiChatBubbleState extends State<AiChatBubble> {
       return;
     }
 
+    final history = _buildHistory();
+
     setState(() {
       _messages.add(_ChatMessage(text: text, isUser: true));
       _messages.add(const _ChatMessage(text: '', isUser: false));
@@ -72,7 +117,12 @@ class _AiChatBubbleState extends State<AiChatBubble> {
     _scrollToBottom();
 
     try {
-      await for (final chunk in AiService.generateResponseStream(text)) {
+      final stream = AiService.generateResponseStream(
+        text,
+        financialContext: _financialSummary,
+        history: history,
+      );
+      await for (final chunk in stream) {
         final current = _messages.last.text;
         setState(() {
           _messages[_messages.length - 1] = _ChatMessage(
