@@ -8,6 +8,7 @@ enum TransactionCategory {
   contas,
   salario,
   investimentos,
+  beneficios,
   outros,
 }
 

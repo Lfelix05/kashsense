@@ -32,6 +32,8 @@ class FinanceContextService {
         return 'Salário';
       case TransactionCategory.investimentos:
         return 'Investimentos';
+      case TransactionCategory.beneficios:
+        return 'Benefícios';
       case TransactionCategory.outros:
         return 'Outros';
     }

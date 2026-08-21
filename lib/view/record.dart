@@ -25,6 +25,7 @@ class _RecordViewState extends State<RecordView> {
     TransactionCategory.contas: 'Contas',
     TransactionCategory.salario: 'Salario',
     TransactionCategory.investimentos: 'Investimentos',
+    TransactionCategory.beneficios: 'Benefícios',
     TransactionCategory.outros: 'Outros',
   };
 
@@ -36,6 +37,7 @@ class _RecordViewState extends State<RecordView> {
     TransactionCategory.contas: Color(0xFF9C27B0),
     TransactionCategory.salario: Color(0xFF009688),
     TransactionCategory.investimentos: Color(0xFF3F51B5),
+    TransactionCategory.beneficios: Color.fromARGB(255, 101, 204, 190),
     TransactionCategory.outros: Color(0xFF795548),
   };
 

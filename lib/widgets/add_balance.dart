@@ -163,7 +163,8 @@ class _AddBalanceSheetState extends State<_AddBalanceSheet> {
                       .where(
                         (category) =>
                             category == TransactionCategory.salario ||
-                            category == TransactionCategory.investimentos,
+                            category == TransactionCategory.investimentos ||
+                            category == TransactionCategory.beneficios,
                       )
                       .map(
                         (category) => DropdownMenuItem<TransactionCategory>(
@@ -238,6 +239,8 @@ String _categoryLabel(TransactionCategory category) {
       return 'Salário';
     case TransactionCategory.investimentos:
       return 'Investimentos';
+    case TransactionCategory.beneficios:
+      return 'Benefícios';
     case TransactionCategory.outros:
       return 'Outros';
   }
