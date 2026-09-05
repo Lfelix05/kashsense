@@ -3,12 +3,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-/// Serviço de acesso à API da Anthropic (Claude)
+/// Serviço de acesso à API do Gemini (Google AI Studio)
 class AiService {
-  static const String _apiKey = String.fromEnvironment('ANTHROPIC_API_KEY');
-  static const String _apiUrl = 'https://api.anthropic.com/v1/messages';
-  static const String _anthropicVersion = '2023-06-01';
-  static const String _model = 'claude-haiku-4-5';
+  static const String _apiKey = String.fromEnvironment('GEMINI_API_KEY');
+  static const String _baseUrl =
+      'https://generativelanguage.googleapis.com/v1beta/models';
+  // Alias sempre gratuito e atualizado automaticamente pelo Google.
+  // Alternativa fixa, caso prefira não depender do alias: 'gemini-2.5-flash'.
+  static const String _model = 'gemini-flash-latest';
   static const int _maxTokens = 1024;
 
   static const String _systemPrompt =
@@ -30,16 +32,15 @@ class AiService {
   static void _ensureApiKeyConfigured() {
     if (_apiKey.isEmpty) {
       throw Exception(
-        'Chave da API da Anthropic não configurada. Rode o app com '
-        '--dart-define=ANTHROPIC_API_KEY=sua-chave.',
+        'Chave da API do Gemini não configurada. Rode o app com '
+        '--dart-define=GEMINI_API_KEY=sua-chave.',
       );
     }
   }
 
   static Map<String, String> get _headers => {
     'content-type': 'application/json',
-    'x-api-key': _apiKey,
-    'anthropic-version': _anthropicVersion,
+    'x-goog-api-key': _apiKey,
   };
 
   static String _buildSystemPrompt(String? financialContext) {
@@ -49,17 +50,29 @@ class AiService {
     return '$_systemPrompt\n\nDados financeiros do usuário:\n$financialContext';
   }
 
-  static List<Map<String, String>> _buildMessages(
+  static String _mapRole(String role) => role == 'assistant' ? 'model' : 'user';
+
+  static List<Map<String, dynamic>> _buildContents(
     String prompt,
     List<Map<String, String>>? history,
   ) {
-    return [...?history, {'role': 'user', 'content': prompt}];
+    final turns = [...?history, {'role': 'user', 'content': prompt}];
+    return turns
+        .map(
+          (m) => {
+            'role': _mapRole(m['role']!),
+            'parts': [
+              {'text': m['content']},
+            ],
+          },
+        )
+        .toList();
   }
 
   static String _errorMessageFor(int statusCode, String body) {
     switch (statusCode) {
       case 401:
-        return 'Chave da API da Anthropic inválida.';
+        return 'Chave da API do Gemini inválida.';
       case 429:
         return 'Limite de requisições da API atingido. Tente novamente em instantes.';
       default:
@@ -76,16 +89,19 @@ class AiService {
     String? financialContext,
     List<Map<String, String>>? history,
   }) async {
-    _ensureApiKeyConfigured();
     try {
+      _ensureApiKeyConfigured();
       final response = await http.post(
-        Uri.parse(_apiUrl),
+        Uri.parse('$_baseUrl/$_model:generateContent'),
         headers: _headers,
         body: jsonEncode({
-          'model': _model,
-          'max_tokens': _maxTokens,
-          'system': _buildSystemPrompt(financialContext),
-          'messages': _buildMessages(prompt, history),
+          'contents': _buildContents(prompt, history),
+          'systemInstruction': {
+            'parts': [
+              {'text': _buildSystemPrompt(financialContext)},
+            ],
+          },
+          'generationConfig': {'maxOutputTokens': _maxTokens},
         }),
       );
 
@@ -94,13 +110,16 @@ class AiService {
       }
 
       final data = jsonDecode(utf8.decode(response.bodyBytes));
-      final content = data['content'] as List<dynamic>?;
-      final textBlock = content?.firstWhere(
-        (block) => block['type'] == 'text',
-        orElse: () => null,
-      );
-      return textBlock?['text'] as String? ??
-          'Não foi possível gerar uma resposta.';
+      final candidates = data['candidates'] as List<dynamic>?;
+      final parts =
+          (candidates != null && candidates.isNotEmpty)
+              ? (candidates.first['content']?['parts'] as List<dynamic>?)
+              : null;
+      final text =
+          (parts != null && parts.isNotEmpty)
+              ? (parts.first['text'] as String?)
+              : null;
+      return text ?? 'Não foi possível gerar uma resposta.';
     } catch (e) {
       print('Erro ao gerar resposta da IA: $e');
       throw Exception('Erro ao gerar resposta da IA');
@@ -113,20 +132,26 @@ class AiService {
     String? financialContext,
     List<Map<String, String>>? history,
   }) async* {
-    _ensureApiKeyConfigured();
-
-    final request = http.Request('POST', Uri.parse(_apiUrl))
-      ..headers.addAll(_headers)
-      ..body = jsonEncode({
-        'model': _model,
-        'max_tokens': _maxTokens,
-        'system': _buildSystemPrompt(financialContext),
-        'messages': _buildMessages(prompt, history),
-        'stream': true,
-      });
-
     final client = http.Client();
     try {
+      _ensureApiKeyConfigured();
+
+      final request =
+          http.Request(
+              'POST',
+              Uri.parse('$_baseUrl/$_model:streamGenerateContent?alt=sse'),
+            )
+            ..headers.addAll(_headers)
+            ..body = jsonEncode({
+              'contents': _buildContents(prompt, history),
+              'systemInstruction': {
+                'parts': [
+                  {'text': _buildSystemPrompt(financialContext)},
+                ],
+              },
+              'generationConfig': {'maxOutputTokens': _maxTokens},
+            });
+
       final streamedResponse = await client.send(request);
 
       if (streamedResponse.statusCode != 200) {
@@ -150,15 +175,24 @@ class AiService {
           continue;
         }
 
-        if (event['type'] == 'content_block_delta') {
-          final delta = event['delta'] as Map<String, dynamic>?;
-          if (delta?['type'] == 'text_delta') {
-            yield delta!['text'] as String;
-          }
-        } else if (event['type'] == 'error') {
+        if (event.containsKey('error')) {
           final message =
-              event['error']?['message'] as String? ?? 'Erro desconhecido da API.';
+              event['error']?['message'] as String? ??
+              'Erro desconhecido da API.';
           throw Exception(message);
+        }
+
+        final candidates = event['candidates'] as List<dynamic>?;
+        final parts =
+            (candidates != null && candidates.isNotEmpty)
+                ? (candidates.first['content']?['parts'] as List<dynamic>?)
+                : null;
+        final chunkText =
+            (parts != null && parts.isNotEmpty)
+                ? (parts.first['text'] as String?)
+                : null;
+        if (chunkText != null && chunkText.isNotEmpty) {
+          yield chunkText;
         }
       }
     } catch (e) {
