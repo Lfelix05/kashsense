@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'summary_screen.dart';
 import 'transaction_screen.dart';
 import 'settings_screen.dart';
+import 'package:kashsense/widgets/ai_chat.dart';
 
 class MasterView extends StatefulWidget {
   final String userId;
@@ -30,24 +31,55 @@ class _MasterViewState extends State<MasterView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _views[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Resumo'),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Transações'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Configurações',
+    if (_selectedIndex == 2) {
+      return Scaffold(
+        body: _views[_selectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Resumo'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list),
+              label: 'Transações',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Configurações',
+            ),
+          ],
+        ),
+      );
+    } else {
+      return AiChatBubble(
+        userId: widget.userId,
+        child: Scaffold(
+          body: _views[_selectedIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Resumo'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.list),
+                label: 'Transações',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'Configurações',
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+      );
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import '../services/ai_service.dart';
 import '../services/finance_context_service.dart';
@@ -320,15 +321,44 @@ class _ChatPanel extends StatelessWidget {
                                 : AppColors.primarySoft,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
-                            message.text.isEmpty ? '...' : message.text,
-                            style: TextStyle(
-                              color: message.isUser
-                                  ? Colors.white
-                                  : Colors.black87,
-                              fontSize: 13,
-                            ),
-                          ),
+                          child: message.isUser
+                              ? Text(
+                                  message.text,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                  ),
+                                )
+                              : MarkdownBody(
+                                  data: message.text.isEmpty
+                                      ? '...'
+                                      : message.text,
+                                  styleSheet: MarkdownStyleSheet(
+                                    p: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 13,
+                                    ),
+                                    strong: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    em: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 13,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                    listBullet: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 13,
+                                    ),
+                                    code: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 12,
+                                      backgroundColor: Color(0x11000000),
+                                    ),
+                                  ),
+                                ),
                         ),
                       );
                     },

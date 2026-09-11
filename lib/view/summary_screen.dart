@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:kashsense/services/database.dart';
 import 'package:kashsense/widgets/action_button.dart';
-import 'package:kashsense/widgets/ai_chat.dart';
 import 'package:kashsense/widgets/month_graph.dart';
 import '../models/user.dart';
 import '../providers/providers.dart';
@@ -61,9 +60,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AiChatBubble(
-      userId: widget.userId,
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Resumo'),
           backgroundColor: AppColors.success,
@@ -299,7 +296,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
             );
           },
         ),
-      ),
-    );
+      );
   }
 }

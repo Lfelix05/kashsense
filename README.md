@@ -42,36 +42,42 @@ Observação: os dados são mantidos em memória (`Database` estático), sem per
 ## Estrutura principal
 
 ```text
-lib/
-├── main.dart
-├── models/
-│   ├── account_model.dart
-│   ├── transaction_model.dart
-│   └── user.dart
-├── providers/
-│   ├── providers.dart
-│   └── validator.dart
-├── services/
-│   └── database.dart
-├── view/
-│   ├── home.dart
-│   ├── login.dart
-│   ├── master.dart
-│   ├── notifications_sett.dart
-│   ├── profile.dart
-│   ├── record.dart
-│   ├── register.dart
-│   ├── security_sett.dart
-│   ├── settings_screen.dart
-│   ├── summary_screen.dart
-│   └── transaction_screen.dart
-└── widgets/
-    ├── action_button.dart
-    ├── add_balance.dart
-    ├── add_transaction.dart
-    ├── budget_progress.dart
-    ├── month_graph.dart
-    └── safe_area_condition.dart
+lib
+ ┣ models
+ ┃ ┣ account_model.dart
+ ┃ ┣ transaction_model.dart
+ ┃ ┗ user.dart
+ ┣ providers
+ ┃ ┣ providers.dart
+ ┃ ┗ validator.dart
+ ┣ services
+ ┃ ┣ ai_service.dart
+ ┃ ┣ database.dart
+ ┃ ┗ finance_context_service.dart
+ ┣ theme
+ ┃ ┗ app_theme.dart
+ ┣ view
+ ┃ ┣ home.dart
+ ┃ ┣ login.dart
+ ┃ ┣ master.dart
+ ┃ ┣ notifications_sett.dart
+ ┃ ┣ profile.dart
+ ┃ ┣ record.dart
+ ┃ ┣ register.dart
+ ┃ ┣ security_sett.dart
+ ┃ ┣ settings_screen.dart
+ ┃ ┣ summary_screen.dart
+ ┃ ┗ transaction_screen.dart
+ ┣ widgets
+ ┃ ┣ action_button.dart
+ ┃ ┣ add_balance.dart
+ ┃ ┣ add_transaction.dart
+ ┃ ┣ ai_chat.dart
+ ┃ ┣ budget_progress.dart
+ ┃ ┣ month_graph.dart
+ ┃ ┗ safe_area_condition.dart
+ ┣ firebase_options.dart
+ ┗ main.dart
 ```
 
 ## Limitações atuais
@@ -102,6 +108,25 @@ flutter pub get
 flutter run
 ```
 
+### Configurando o chat com IA (Google Gemini)
+
+O widget de chat (`lib/widgets/ai_chat.dart` + `lib/services/ai_service.dart`) chama a API do Gemini
+diretamente e precisa de uma chave de API (gerada em `aistudio.google.com/apikey`) passada via `--dart-define`.
+Sem ela, o app inicia normalmente mas o chat sempre falha com "Chave da API do Gemini não configurada".
+
+1. Copie `env.json.example` para `env.json` (esse arquivo é ignorado pelo git, não vai para o repositório):
+
+   ```bash
+   cp env.json.example env.json
+   ```
+
+2. Edite `env.json` e coloque sua chave real no lugar de `sua-chave-aqui`.
+3. Rode o app passando o arquivo de defines:
+
+   ```bash
+   flutter run --dart-define-from-file=env.json
+   ```
+
 ## Categorias de transação (atuais)
 
 - comida
@@ -110,4 +135,6 @@ flutter run
 - saude
 - contas
 - salario
+- investimento
+- benefícios
 - outros
