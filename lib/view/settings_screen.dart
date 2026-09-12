@@ -75,10 +75,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           'Configure suas preferências de notificações',
                         ),
                         onTap: () {
+                          final userId = widget.userId;
+                          if (userId == null || userId.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Usuário não identificado. Faça login novamente.',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const NotificationsSett(),
+                              builder: (context) =>
+                                  NotificationsSett(userId: userId),
                             ),
                           );
                         },
@@ -91,10 +104,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           'Gerencie suas configurações de segurança',
                         ),
                         onTap: () {
+                          final userId = widget.userId;
+                          if (userId == null || userId.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Usuário não identificado. Faça login novamente.',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SecuritySett(),
+                              builder: (context) => SecuritySett(userId: userId),
                             ),
                           );
                         },

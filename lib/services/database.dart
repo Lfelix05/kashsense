@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import '../models/user_settings.dart';
 import 'package:kashsense/models/transaction_model.dart';
 import '../models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
@@ -294,6 +294,35 @@ class Database {
     } catch (e) {
       print('Erro ao salvar limite de orçamento: $e');
       throw Exception('Erro ao salvar limite de orçamento');
+    }
+  }
+
+  static Future<UserSettings> getSettings(String userId) async {
+    try {
+      final doc = await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data();
+        return UserSettings.fromJson(data?['settings'] ?? {});
+      }
+    } catch (e) {
+      print('Erro ao buscar configurações do usuário: $e');
+    }
+    return UserSettings(userId: userId);
+  }
+
+  static Future<void> setSettings(String userId, UserSettings settings) async {
+    try {
+      await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .set({'settings': settings.toJson()}, firestore.SetOptions(merge: true));
+    } catch (e) {
+      print('Erro ao salvar configurações do usuário: $e');
+      throw Exception('Erro ao salvar configurações do usuário');
     }
   }
 }

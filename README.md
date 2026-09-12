@@ -46,7 +46,8 @@ lib
  ┣ models
  ┃ ┣ account_model.dart
  ┃ ┣ transaction_model.dart
- ┃ ┗ user.dart
+ ┃ ┣ user.dart
+ ┃ ┗ user_settings.dart
  ┣ providers
  ┃ ┣ providers.dart
  ┃ ┗ validator.dart
@@ -55,7 +56,8 @@ lib
  ┃ ┣ database.dart
  ┃ ┗ finance_context_service.dart
  ┣ theme
- ┃ ┗ app_theme.dart
+ ┃ ┣ app_theme.dart
+ ┃ ┗ theme_controller.dart
  ┣ view
  ┃ ┣ home.dart
  ┃ ┣ login.dart
@@ -121,6 +123,9 @@ Sem ela, o app inicia normalmente mas o chat sempre falha com "Chave da API do G
    ```
 
 2. Edite `env.json` e coloque sua chave real no lugar de `sua-chave-aqui`.
+   `GEMINI_API_KEY2` é opcional: se preenchida, o app tenta automaticamente essa segunda
+   chave quando a primeira falha por estar inválida ou por ter estourado a cota (erros
+   401/403/429). Se não quiser usar uma segunda chave, pode remover essa linha do `env.json`.
 3. Rode o app passando o arquivo de defines:
 
    ```bash

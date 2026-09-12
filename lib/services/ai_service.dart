@@ -6,12 +6,12 @@ import 'package:http/http.dart' as http;
 /// Serviço de acesso à API do Gemini (Google AI Studio)
 class AiService {
   static const String _apiKey = String.fromEnvironment('GEMINI_API_KEY');
+  static const String _apiKey2 = String.fromEnvironment('GEMINI_API_KEY2');
   static const String _baseUrl =
       'https://generativelanguage.googleapis.com/v1beta/models';
-  // Alias sempre gratuito e atualizado automaticamente pelo Google.
-  // Alternativa fixa, caso prefira não depender do alias: 'gemini-2.5-flash'.
   static const String _model = 'gemini-flash-latest';
   static const int _maxTokens = 1024;
+  
 
   static const String _systemPrompt =
       'Você é o conselheiro financeiro pessoal do app KashSense. Seu '
@@ -29,8 +29,12 @@ class AiService {
       '- Suas sugestões de investimento são orientações gerais, não '
       'recomendações financeiras regulamentadas.';
 
+// se ocorrer um erro, troca de api e tenta de novo
+  static List<String> get _availableKeys =>
+      [_apiKey, _apiKey2].where((k) => k.isNotEmpty).toList();
+
   static void _ensureApiKeyConfigured() {
-    if (_apiKey.isEmpty) {
+    if (_availableKeys.isEmpty) {
       throw Exception(
         'Chave da API do Gemini não configurada. Rode o app com '
         '--dart-define=GEMINI_API_KEY=sua-chave.',
@@ -38,10 +42,13 @@ class AiService {
     }
   }
 
-  static Map<String, String> get _headers => {
+  static Map<String, String> _headersFor(String apiKey) => {
     'content-type': 'application/json',
-    'x-goog-api-key': _apiKey,
+    'x-goog-api-key': apiKey,
   };
+
+  static bool _isKeyFailure(int statusCode) =>
+      statusCode == 401 || statusCode == 403 || statusCode == 429;
 
   static String _buildSystemPrompt(String? financialContext) {
     if (financialContext == null || financialContext.trim().isEmpty) {
@@ -91,22 +98,32 @@ class AiService {
   }) async {
     try {
       _ensureApiKeyConfigured();
-      final response = await http.post(
-        Uri.parse('$_baseUrl/$_model:generateContent'),
-        headers: _headers,
-        body: jsonEncode({
-          'contents': _buildContents(prompt, history),
-          'systemInstruction': {
-            'parts': [
-              {'text': _buildSystemPrompt(financialContext)},
-            ],
-          },
-          'generationConfig': {'maxOutputTokens': _maxTokens},
-        }),
-      );
+      final keys = _availableKeys;
+      late http.Response response;
+      for (var i = 0; i < keys.length; i++) {
+        response = await http.post(
+          Uri.parse('$_baseUrl/$_model:generateContent'),
+          headers: _headersFor(keys[i]),
+          body: jsonEncode({
+            'contents': _buildContents(prompt, history),
+            'systemInstruction': {
+              'parts': [
+                {'text': _buildSystemPrompt(financialContext)},
+              ],
+            },
+            'generationConfig': {'maxOutputTokens': _maxTokens},
+          }),
+        );
 
-      if (response.statusCode != 200) {
-        throw Exception(_errorMessageFor(response.statusCode, response.body));
+        if (response.statusCode == 200) break;
+
+        final isLastKey = i == keys.length - 1;
+        if (!_isKeyFailure(response.statusCode) || isLastKey) {
+          throw Exception(
+            _errorMessageFor(response.statusCode, response.body),
+          );
+        }
+        // Chave atual falhou (inválida/sem cota) e ainda há outra: tenta a próxima.
       }
 
       final data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -136,27 +153,37 @@ class AiService {
     try {
       _ensureApiKeyConfigured();
 
-      final request =
-          http.Request(
-              'POST',
-              Uri.parse('$_baseUrl/$_model:streamGenerateContent?alt=sse'),
-            )
-            ..headers.addAll(_headers)
-            ..body = jsonEncode({
-              'contents': _buildContents(prompt, history),
-              'systemInstruction': {
-                'parts': [
-                  {'text': _buildSystemPrompt(financialContext)},
-                ],
-              },
-              'generationConfig': {'maxOutputTokens': _maxTokens},
-            });
+      final keys = _availableKeys;
+      late http.StreamedResponse streamedResponse;
+      for (var i = 0; i < keys.length; i++) {
+        final request =
+            http.Request(
+                'POST',
+                Uri.parse('$_baseUrl/$_model:streamGenerateContent?alt=sse'),
+              )
+              ..headers.addAll(_headersFor(keys[i]))
+              ..body = jsonEncode({
+                'contents': _buildContents(prompt, history),
+                'systemInstruction': {
+                  'parts': [
+                    {'text': _buildSystemPrompt(financialContext)},
+                  ],
+                },
+                'generationConfig': {'maxOutputTokens': _maxTokens},
+              });
 
-      final streamedResponse = await client.send(request);
+        streamedResponse = await client.send(request);
 
-      if (streamedResponse.statusCode != 200) {
+        if (streamedResponse.statusCode == 200) break;
+
+        final isLastKey = i == keys.length - 1;
         final body = await streamedResponse.stream.bytesToString();
-        throw Exception(_errorMessageFor(streamedResponse.statusCode, body));
+        if (!_isKeyFailure(streamedResponse.statusCode) || isLastKey) {
+          throw Exception(
+            _errorMessageFor(streamedResponse.statusCode, body),
+          );
+        }
+        // Chave atual falhou (inválida/sem cota) e ainda há outra: tenta a próxima.
       }
 
       final lines = streamedResponse.stream
