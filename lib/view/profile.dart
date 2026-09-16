@@ -145,19 +145,19 @@ class _ProfileSettingState extends State<ProfileSetting> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Foto de perfil',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primaryDark,
+                    color: AppColors.headingOf(context),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Center(
                   child: CircleAvatar(
                     radius: 44,
-                    backgroundColor: AppColors.primarySoft,
+                    backgroundColor: AppColors.primarySoftOf(context),
                     backgroundImage: _buildPhotoProvider(),
                     child: _buildPhotoProvider() == null
                         ? const Icon(
@@ -184,12 +184,12 @@ class _ProfileSettingState extends State<ProfileSetting> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Nome',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primaryDark,
+                    color: AppColors.headingOf(context),
                   ),
                 ),
                 const SizedBox(height: 8),

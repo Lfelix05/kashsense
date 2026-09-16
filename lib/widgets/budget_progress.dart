@@ -151,11 +151,11 @@ class _BudgetProgressState extends State<BudgetProgress> {
                 children: [
                   Text(
                     widget.label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontFamily: 'JetBrains Mono',
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
+                      color: AppColors.headingOf(context),
                     ),
                   ),
                   Text(
@@ -170,9 +170,12 @@ class _BudgetProgressState extends State<BudgetProgress> {
                 ],
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'Toque para alterar o limite mensal',
-                style: TextStyle(fontSize: 12, color: AppColors.textFaint),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textFaintOf(context),
+                ),
               ),
               const SizedBox(height: 10),
               ClipRRect(
@@ -180,7 +183,7 @@ class _BudgetProgressState extends State<BudgetProgress> {
                 child: LinearProgressIndicator(
                   value: ratio,
                   minHeight: 14,
-                  backgroundColor: AppColors.primarySoft,
+                  backgroundColor: AppColors.primarySoftOf(context),
                   valueColor: AlwaysStoppedAnimation<Color>(color),
                 ),
               ),
@@ -190,17 +193,17 @@ class _BudgetProgressState extends State<BudgetProgress> {
                 children: [
                   Text(
                     'Gasto: ${_formatCurrency(spent)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textMuted,
+                      color: AppColors.textMutedOf(context),
                       fontFamily: 'JetBrains Mono',
                     ),
                   ),
                   Text(
                     'Limite: ${_formatCurrency(_limit)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textMuted,
+                      color: AppColors.textMutedOf(context),
                       fontFamily: 'JetBrains Mono',
                     ),
                   ),

@@ -10,9 +10,10 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
 
+    final isDark = AppColors.isDark(context);
+
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppGradients.background),
+      body: AppBackground(
         child: SafeArea(
           child: Stack(
             children: [
@@ -22,9 +23,11 @@ class Home extends StatelessWidget {
                 child: Container(
                   width: 220,
                   height: 220,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Color(0xFFD5E3FF),
+                    color: isDark
+                        ? AppColors.cardDark
+                        : const Color(0xFFD5E3FF),
                   ),
                 ),
               ),
@@ -34,9 +37,11 @@ class Home extends StatelessWidget {
                 child: Container(
                   width: 260,
                   height: 260,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Color(0xFFCFDCFF),
+                    color: isDark
+                        ? AppColors.cardDark
+                        : const Color(0xFFCFDCFF),
                   ),
                 ),
               ),
@@ -49,7 +54,9 @@ class Home extends StatelessWidget {
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
-                        side: const BorderSide(color: AppColors.cardBorder),
+                        side: BorderSide(
+                          color: AppColors.cardBorderOf(context),
+                        ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(28),
@@ -57,32 +64,32 @@ class Home extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Row(
+                            Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.account_balance_wallet_rounded,
                                   color: AppColors.primary,
                                   size: 32,
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Text(
                                   'KashSense',
                                   style: TextStyle(
                                     fontFamily: 'JetBrains Mono',
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.primaryDark,
+                                    color: AppColors.headingOf(context),
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 14),
-                            const Text(
+                            Text(
                               'Controle seu dinheiro com clareza, metas e alertas úteis no dia a dia.',
                               style: TextStyle(
                                 fontSize: 15,
                                 height: 1.4,
-                                color: AppColors.textMuted,
+                                color: AppColors.textMutedOf(context),
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -133,7 +140,7 @@ class Home extends StatelessWidget {
                               '© 2026 KashSense. Todos os direitos reservados.',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey.shade600,
+                                color: AppColors.textFaintOf(context),
                               ),
                             ),
                           ],
@@ -162,7 +169,7 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.primarySoft,
+        color: AppColors.primarySoftOf(context),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
@@ -172,8 +179,8 @@ class _InfoChip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(
-              color: AppColors.chipText,
+            style: TextStyle(
+              color: AppColors.chipTextOf(context),
               fontWeight: FontWeight.w600,
               fontSize: 12,
             ),

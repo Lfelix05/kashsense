@@ -32,6 +32,31 @@ class AppColors {
   static const inputFillDark = Color(0xFF232C42);
   static const textMutedDark = Color(0xFFAEB9DD);
   static const textFaintDark = Color(0xFF8892B0);
+  static const primarySoftDark = Color(0xFF25304D);
+
+  static bool isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
+
+  static Color headingOf(BuildContext context) =>
+      isDark(context) ? accentBlue : primaryDark;
+
+  static Color textMutedOf(BuildContext context) =>
+      isDark(context) ? textMutedDark : textMuted;
+
+  static Color textFaintOf(BuildContext context) =>
+      isDark(context) ? textFaintDark : textFaint;
+
+  static Color cardBorderOf(BuildContext context) =>
+      isDark(context) ? cardBorderDark : cardBorder;
+
+  static Color inputFillOf(BuildContext context) =>
+      isDark(context) ? inputFillDark : inputFill;
+
+  static Color primarySoftOf(BuildContext context) =>
+      isDark(context) ? primarySoftDark : primarySoft;
+
+  static Color chipTextOf(BuildContext context) =>
+      isDark(context) ? accentBlue : chipText;
 }
 
 class AppGradients {
@@ -78,7 +103,9 @@ class AppBackground extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        gradient: isDark ? AppGradients.backgroundDark : AppGradients.background,
+        gradient: isDark
+            ? AppGradients.backgroundDark
+            : AppGradients.background,
       ),
       child: child,
     );

@@ -81,9 +81,11 @@ class _TransactionScreenState extends State<TransactionScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Total de gastos:',
-                                  style: TextStyle(color: AppColors.textMuted),
+                                  style: TextStyle(
+                                    color: AppColors.textMutedOf(context),
+                                  ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
@@ -144,7 +146,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     side: BorderSide(
-                                      color: Colors.grey[300]!,
+                                      color: AppColors.cardBorderOf(context),
                                       width: 1,
                                     ),
                                   ),

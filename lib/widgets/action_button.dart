@@ -19,11 +19,11 @@ class QuickActionButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Material(
-          color: AppColors.primarySoft,
+          color: AppColors.primarySoftOf(context),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: AppColors.cardBorder),
+            side: BorderSide(color: AppColors.cardBorderOf(context)),
           ),
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
@@ -38,10 +38,10 @@ class QuickActionButton extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: AppColors.textMuted,
+            color: AppColors.textMutedOf(context),
           ),
         ),
       ],

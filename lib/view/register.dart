@@ -101,19 +101,18 @@ class _RegisterViewState extends State<RegisterView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Criar conta'),
-        backgroundColor: AppColors.backgroundStart,
-        foregroundColor: AppColors.primaryDark,
-        titleTextStyle: const TextStyle(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        foregroundColor: AppColors.headingOf(context),
+        titleTextStyle: TextStyle(
           fontFamily: 'JetBrains Mono',
           fontWeight: FontWeight.bold,
           fontSize: 20,
-          color: AppColors.primaryDark,
+          color: AppColors.headingOf(context),
         ),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: Container(
-          decoration: const BoxDecoration(gradient: AppGradients.background),
+        child: AppBackground(
           child: Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomInset),
@@ -123,7 +122,7 @@ class _RegisterViewState extends State<RegisterView> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(22),
-                    side: const BorderSide(color: AppColors.cardBorder),
+                    side: BorderSide(color: AppColors.cardBorderOf(context)),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(24),
@@ -131,19 +130,21 @@ class _RegisterViewState extends State<RegisterView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           'Crie sua conta',
                           style: TextStyle(
                             fontFamily: 'JetBrains Mono',
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primaryDark,
+                            color: AppColors.headingOf(context),
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Comece a organizar seus gastos e metas em poucos passos.',
-                          style: TextStyle(color: AppColors.textMuted),
+                          style: TextStyle(
+                            color: AppColors.textMutedOf(context),
+                          ),
                         ),
                         const SizedBox(height: 20),
                         Form(
@@ -203,23 +204,23 @@ class _RegisterViewState extends State<RegisterView> {
                                 : passwordStrength <= 0.6
                                 ? Colors.orange
                                 : Colors.green,
-                            backgroundColor: const Color(0xFFE2E9FF),
+                            backgroundColor: AppColors.primarySoftOf(context),
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           'Força da senha: ${_passwordStrengthLabel(_passwordController.text)}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textFaint,
+                            color: AppColors.textFaintOf(context),
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
+                        Text(
                           'Use no mínimo 6 caracteres e combine letras e números.',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.textFaint,
+                            color: AppColors.textFaintOf(context),
                           ),
                         ),
                         const SizedBox(height: 14),

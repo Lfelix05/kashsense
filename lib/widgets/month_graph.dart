@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:kashsense/models/transaction_model.dart';
 import 'package:kashsense/services/database.dart';
+import 'package:kashsense/theme/app_theme.dart';
 
 Widget monthGraph({required String userId}) {
   return StreamBuilder<List<Transaction>>(
@@ -42,7 +43,7 @@ Widget monthGraph({required String userId}) {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
+                color: AppColors.headingOf(context),
               ),
             ),
             const SizedBox(height: 12),
@@ -86,7 +87,10 @@ Widget monthGraph({required String userId}) {
                   : Center(
                       child: Text(
                         'Sem movimentações neste mês',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                        style: TextStyle(
+                          color: AppColors.textMutedOf(context),
+                          fontSize: 14,
+                        ),
                       ),
                     ),
             ),
@@ -107,7 +111,10 @@ Widget monthGraph({required String userId}) {
                   children: [
                     const Icon(Icons.arrow_upward, color: Colors.green),
                     const SizedBox(height: 4),
-                    Text('Receitas', style: TextStyle(color: Colors.grey[600])),
+                    Text(
+                      'Receitas',
+                      style: TextStyle(color: AppColors.textMutedOf(context)),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       _formatCurrency(income),
@@ -123,7 +130,10 @@ Widget monthGraph({required String userId}) {
                   children: [
                     const Icon(Icons.arrow_downward, color: Colors.red),
                     const SizedBox(height: 4),
-                    Text('Despesas', style: TextStyle(color: Colors.grey[600])),
+                    Text(
+                      'Despesas',
+                      style: TextStyle(color: AppColors.textMutedOf(context)),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       _formatCurrency(expense),

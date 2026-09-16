@@ -61,241 +61,236 @@ class _SummaryScreenState extends State<SummaryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Resumo'),
-          backgroundColor: AppColors.success,
-          automaticallyImplyLeading: false,
-        ),
-        body: FutureBuilder<User?>(
-          future: Database.getUserById(widget.userId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return const Center(
-                child: Text('Erro ao carregar dados do usuário'),
-              );
-            } else if (!snapshot.hasData || snapshot.data == null) {
-              return const Center(child: Text('Usuário não encontrado'));
-            }
-
-            final currentUser = snapshot.data!;
-            final displayName = currentUser.name.isNotEmpty
-                ? currentUser.name
-                : 'Usuário';
-            final profilePhoto = _buildProfilePhoto(
-              currentUser.profilePictureUrl,
+      appBar: AppBar(
+        title: const Text('Resumo'),
+        backgroundColor: AppColors.success,
+        automaticallyImplyLeading: false,
+      ),
+      body: FutureBuilder<User?>(
+        future: Database.getUserById(widget.userId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(
+              child: Text('Erro ao carregar dados do usuário'),
             );
+          } else if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text('Usuário não encontrado'));
+          }
 
-            return AppBackground(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
+          final currentUser = snapshot.data!;
+          final displayName = currentUser.name.isNotEmpty
+              ? currentUser.name
+              : 'Usuário';
+          final profilePhoto = _buildProfilePhoto(
+            currentUser.profilePictureUrl,
+          );
+
+          return AppBackground(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(18)),
+                        gradient: AppGradients.success,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Olá, $displayName!',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontFamily: 'JetBrains Mono',
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              CircleAvatar(
+                                radius: 36,
+                                backgroundImage: profilePhoto,
+                                backgroundColor: Colors.white.withValues(
+                                  alpha: 0.85,
+                                ),
+                                child: profilePhoto == null
+                                    ? const Icon(
+                                        Icons.account_circle,
+                                        size: 28,
+                                        color: Colors.black54,
+                                      )
+                                    : null,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Saldo Atual',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.textMutedOf(context),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'R\$ ${_currentBalance.toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.success,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Icon(
+                                        Icons.account_balance_wallet,
+                                        color: AppColors.success,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
                         padding: const EdgeInsets.all(16.0),
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(18)),
-                          gradient: AppGradients.success,
-                        ),
+                        child: monthGraph(userId: widget.userId),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Olá, $displayName!',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontFamily: 'JetBrains Mono',
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                CircleAvatar(
-                                  radius: 36,
-                                  backgroundImage: profilePhoto,
-                                  backgroundColor: Colors.white.withValues(
-                                    alpha: 0.85,
-                                  ),
-                                  child: profilePhoto == null
-                                      ? const Icon(
-                                          Icons.account_circle,
-                                          size: 28,
-                                          color: Colors.black54,
-                                        )
-                                      : null,
-                                ),
-                              ],
+                            Text(
+                              'Ações Rápidas',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.headingOf(context),
+                              ),
                             ),
                             const SizedBox(height: 12),
-                            Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Saldo Atual',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: AppColors.textMuted,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                QuickActionButton(
+                                  icon: Icons.monetization_on,
+                                  label: 'Add. transação',
+                                  onTap: () async {
+                                    await showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (context) => buildAddTransaction(
+                                        context,
+                                        userId: widget.userId,
                                       ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          'R\$ ${_currentBalance.toStringAsFixed(2)}',
-                                          style: const TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.success,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        const Icon(
-                                          Icons.account_balance_wallet,
-                                          color: AppColors.success,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                    );
+                                    await _loadBalance();
+                                  },
                                 ),
-                              ),
+                                QuickActionButton(
+                                  icon: Icons.wallet,
+                                  label: 'Add. Saldo',
+                                  onTap: () async {
+                                    final addedBalance =
+                                        await showModalBottomSheet<
+                                          BalanceAddition
+                                        >(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) =>
+                                              buildAddBalance(context),
+                                        );
+
+                                    if (addedBalance == null) {
+                                      return;
+                                    }
+
+                                    final newBalance = await addBalance(
+                                      widget.userId,
+                                      addedBalance.amount,
+                                      category: addedBalance.category,
+                                    );
+
+                                    if (!mounted) {
+                                      return;
+                                    }
+
+                                    setState(() {
+                                      _currentBalance = newBalance;
+                                    });
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Saldo atualizado para R\$ ${newBalance.toStringAsFixed(2)}.',
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                QuickActionButton(
+                                  icon: Icons.bar_chart,
+                                  label: 'Relatórios',
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            RecordView(userId: widget.userId),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: monthGraph(userId: widget.userId),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: BudgetProgress(
+                          userId: widget.userId,
+                          label: 'Orçamento Mensal',
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Ações Rápidas',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primaryDark,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  QuickActionButton(
-                                    icon: Icons.monetization_on,
-                                    label: 'Add. transação',
-                                    onTap: () async {
-                                      await showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) =>
-                                            buildAddTransaction(
-                                              context,
-                                              userId: widget.userId,
-                                            ),
-                                      );
-                                      await _loadBalance();
-                                    },
-                                  ),
-                                  QuickActionButton(
-                                    icon: Icons.wallet,
-                                    label: 'Add. Saldo',
-                                    onTap: () async {
-                                      final addedBalance =
-                                          await showModalBottomSheet<
-                                            BalanceAddition
-                                          >(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            builder: (context) =>
-                                                buildAddBalance(context),
-                                          );
-
-                                      if (addedBalance == null) {
-                                        return;
-                                      }
-
-                                      final newBalance = await addBalance(
-                                        widget.userId,
-                                        addedBalance.amount,
-                                        category: addedBalance.category,
-                                      );
-
-                                      if (!mounted) {
-                                        return;
-                                      }
-
-                                      setState(() {
-                                        _currentBalance = newBalance;
-                                      });
-
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Saldo atualizado para R\$ ${newBalance.toStringAsFixed(2)}.',
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  QuickActionButton(
-                                    icon: Icons.bar_chart,
-                                    label: 'Relatórios',
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              RecordView(userId: widget.userId),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: BudgetProgress(
-                            userId: widget.userId,
-                            label: 'Orçamento Mensal',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
-      );
+            ),
+          );
+        },
+      ),
+    );
   }
 }

@@ -60,9 +60,7 @@ class _AiChatBubbleState extends State<AiChatBubble> {
     }
     setState(() => _isLoadingSummary = true);
     try {
-      final summary = await FinanceContextService.buildSummary(
-        widget.userId,
-      );
+      final summary = await FinanceContextService.buildSummary(widget.userId);
       if (mounted) {
         setState(() => _financialSummary = summary);
       }
@@ -252,7 +250,7 @@ class _ChatPanel extends StatelessWidget {
       elevation: 8,
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
-      color: Colors.white,
+      color: Theme.of(context).cardTheme.color,
       child: Column(
         children: [
           Container(
@@ -286,13 +284,16 @@ class _ChatPanel extends StatelessWidget {
           ),
           Expanded(
             child: messages.isEmpty
-                ? const Center(
+                ? Center(
                     child: Padding(
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       child: Text(
                         'Pergunte algo sobre suas finanças!',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black54, fontSize: 13),
+                        style: TextStyle(
+                          color: AppColors.textMutedOf(context),
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   )
@@ -318,7 +319,7 @@ class _ChatPanel extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: message.isUser
                                 ? AppColors.primary
-                                : AppColors.primarySoft,
+                                : AppColors.primarySoftOf(context),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: message.isUser
@@ -329,35 +330,49 @@ class _ChatPanel extends StatelessWidget {
                                     fontSize: 13,
                                   ),
                                 )
-                              : MarkdownBody(
-                                  data: message.text.isEmpty
-                                      ? '...'
-                                      : message.text,
-                                  styleSheet: MarkdownStyleSheet(
-                                    p: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 13,
-                                    ),
-                                    strong: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    em: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 13,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                    listBullet: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 13,
-                                    ),
-                                    code: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 12,
-                                      backgroundColor: Color(0x11000000),
-                                    ),
-                                  ),
+                              : Builder(
+                                  builder: (context) {
+                                    final textColor = AppColors.textMutedOf(
+                                      context,
+                                    );
+                                    return MarkdownBody(
+                                      data: message.text.isEmpty
+                                          ? '...'
+                                          : message.text,
+                                      styleSheet: MarkdownStyleSheet(
+                                        p: TextStyle(
+                                          color: textColor,
+                                          fontSize: 13,
+                                        ),
+                                        strong: TextStyle(
+                                          color: textColor,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        em: TextStyle(
+                                          color: textColor,
+                                          fontSize: 13,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                        listBullet: TextStyle(
+                                          color: textColor,
+                                          fontSize: 13,
+                                        ),
+                                        code: TextStyle(
+                                          color: textColor,
+                                          fontSize: 12,
+                                          backgroundColor:
+                                              AppColors.isDark(context)
+                                              ? Colors.white.withValues(
+                                                  alpha: 0.08,
+                                                )
+                                              : Colors.black.withValues(
+                                                  alpha: 0.07,
+                                                ),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                         ),
                       );
@@ -382,7 +397,7 @@ class _ChatPanel extends StatelessWidget {
                         vertical: 8,
                       ),
                       filled: true,
-                      fillColor: AppColors.backgroundStart,
+                      fillColor: AppColors.inputFillOf(context),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide.none,

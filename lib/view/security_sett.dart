@@ -56,11 +56,11 @@ class _SecuritySettState extends State<SecuritySett> {
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontFamily: 'JetBrains Mono',
           fontWeight: FontWeight.bold,
-          color: AppColors.primaryDark,
+          color: AppColors.headingOf(context),
         ),
       ),
     );
@@ -88,13 +88,13 @@ class _SecuritySettState extends State<SecuritySett> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
+                  color: AppColors.primarySoftOf(context),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   chipLabel,
-                  style: const TextStyle(
-                    color: AppColors.chipText,
+                  style: TextStyle(
+                    color: AppColors.chipTextOf(context),
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
                   ),
@@ -148,7 +148,8 @@ class _SecuritySettState extends State<SecuritySett> {
                   _sectionTitle('Acesso ao aplicativo'),
                   _toggleTile(
                     title: 'Bloqueio biométrico',
-                    subtitle: 'Exige digital ou reconhecimento facial para entrar.',
+                    subtitle:
+                        'Exige digital ou reconhecimento facial para entrar.',
                     value: settings.biometricLock,
                     chipLabel: 'Em breve',
                     onChanged: (value) {

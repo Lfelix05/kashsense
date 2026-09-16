@@ -89,19 +89,18 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Entrar'),
-        backgroundColor: AppColors.backgroundStart,
-        foregroundColor: AppColors.primaryDark,
-        titleTextStyle: const TextStyle(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        foregroundColor: AppColors.headingOf(context),
+        titleTextStyle: TextStyle(
           fontFamily: 'JetBrains Mono',
           fontWeight: FontWeight.bold,
           fontSize: 20,
-          color: AppColors.primaryDark,
+          color: AppColors.headingOf(context),
         ),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: Container(
-          decoration: const BoxDecoration(gradient: AppGradients.background),
+        child: AppBackground(
           child: Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomInset),
@@ -111,7 +110,7 @@ class _LoginViewState extends State<LoginView> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(22),
-                    side: const BorderSide(color: AppColors.cardBorder),
+                    side: BorderSide(color: AppColors.cardBorderOf(context)),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(24),
@@ -119,19 +118,21 @@ class _LoginViewState extends State<LoginView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           'Bem-vindo de volta',
                           style: TextStyle(
                             fontFamily: 'JetBrains Mono',
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primaryDark,
+                            color: AppColors.headingOf(context),
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Acesse sua conta e continue acompanhando sua evolução financeira.',
-                          style: TextStyle(color: AppColors.textMuted),
+                          style: TextStyle(
+                            color: AppColors.textMutedOf(context),
+                          ),
                         ),
                         const SizedBox(height: 20),
 

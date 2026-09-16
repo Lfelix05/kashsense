@@ -200,7 +200,7 @@ class _RecordViewState extends State<RecordView> {
   Widget _leftTitleWidgets(double value, TitleMeta meta) {
     return Text(
       value == 0 ? '0' : value.toStringAsFixed(0),
-      style: const TextStyle(fontSize: 10, color: Colors.black54),
+      style: TextStyle(fontSize: 10, color: AppColors.textFaintOf(context)),
     );
   }
 
@@ -256,19 +256,19 @@ class _RecordViewState extends State<RecordView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Mês Atual',
                     style: TextStyle(
                       fontSize: 18,
                       fontFamily: 'JetBrains Mono',
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
+                      color: AppColors.headingOf(context),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Receitas x Despesas por categoria',
-                    style: TextStyle(color: AppColors.textMuted),
+                    style: TextStyle(color: AppColors.textMutedOf(context)),
                   ),
                   const SizedBox(height: 16),
                   Card(
@@ -387,21 +387,21 @@ class _RecordViewState extends State<RecordView> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Categorias (toque para detalhes)',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primaryDark,
+                      color: AppColors.headingOf(context),
                     ),
                   ),
                   const SizedBox(height: 8),
                   _buildLegend(incomeByCategory, expenseByCategory),
                   if (monthTransactions.isEmpty) ...[
                     const SizedBox(height: 14),
-                    const Text(
+                    Text(
                       'Sem movimentações neste mês para exibir no gráfico.',
-                      style: TextStyle(color: AppColors.textMuted),
+                      style: TextStyle(color: AppColors.textMutedOf(context)),
                     ),
                   ],
                 ],

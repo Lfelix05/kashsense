@@ -55,11 +55,11 @@ class _NotificationsSettState extends State<NotificationsSett> {
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontFamily: 'JetBrains Mono',
           fontWeight: FontWeight.bold,
-          color: AppColors.primaryDark,
+          color: AppColors.headingOf(context),
         ),
       ),
     );
@@ -87,13 +87,13 @@ class _NotificationsSettState extends State<NotificationsSett> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
+                  color: AppColors.primarySoftOf(context),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   chipLabel,
-                  style: const TextStyle(
-                    color: AppColors.chipText,
+                  style: TextStyle(
+                    color: AppColors.chipTextOf(context),
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
                   ),
@@ -283,13 +283,15 @@ class _NotificationsSettState extends State<NotificationsSett> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: AppColors.primarySoft,
+                      color: AppColors.primarySoftOf(context),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: AppColors.cardBorder),
+                      border: Border.all(
+                        color: AppColors.cardBorderOf(context),
+                      ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Você receberá no máximo 3 alertas por dia para evitar excesso de notificações.',
-                      style: TextStyle(color: AppColors.chipText),
+                      style: TextStyle(color: AppColors.chipTextOf(context)),
                     ),
                   ),
                   const SizedBox(height: 14),

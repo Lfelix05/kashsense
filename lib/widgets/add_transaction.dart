@@ -103,12 +103,12 @@ class _AddTransactionSheetState extends State<_AddTransactionSheet> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardTheme.color,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(20),
               ),
-              border: const Border.fromBorderSide(
-                BorderSide(color: AppColors.cardBorder),
+              border: Border.fromBorderSide(
+                BorderSide(color: AppColors.cardBorderOf(context)),
               ),
               boxShadow: [
                 BoxShadow(
@@ -121,11 +121,11 @@ class _AddTransactionSheetState extends State<_AddTransactionSheet> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Adicionar Transação',
                   style: TextStyle(
                     fontFamily: 'JetBrains Mono',
-                    color: AppColors.primaryDark,
+                    color: AppColors.headingOf(context),
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),

@@ -82,12 +82,6 @@ lib
  ┗ main.dart
 ```
 
-## Limitações atuais
-
-- Os dados continuam em memória (sem persistência em banco local/remoto)
-- Recursos de Notificações e Segurança estão em modo demonstração (UI pronta, sem backend)
-- Não há integração com autenticação externa/online
-
 ## Roteiro de demonstração (3-5 minutos)
 
 1. Abertura: mostrar Home e proposta de valor
