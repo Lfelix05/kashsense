@@ -5,5 +5,12 @@ class AccountModel {
   final double balance; // Saldo ATUAL da conta
   final String color; // Para diferenciar no gráfico (ex: Roxo para Nubank)
   final double? budgetLimit; // Orçamento mensal para essa conta
-  AccountModel({required this.id, required this.userId, required this.name, required this.balance, required this.color, this.budgetLimit});
+  AccountModel({
+    required this.id,
+    required this.userId,
+    required this.name,
+    required this.balance,
+    required this.color,
+    this.budgetLimit,
+  });
 }

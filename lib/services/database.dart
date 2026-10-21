@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import '../models/user_settings.dart';
 import 'package:kashsense/models/transaction_model.dart';
 import '../models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
@@ -246,9 +246,7 @@ class Database {
           .collection('transactions')
           .get();
 
-      return snapshot.docs
-          .map((doc) => Transaction.fromJson(doc.data()))
-          .toList();
+      return _parseTransactionDocs(snapshot.docs);
     } catch (e) {
       print('Erro ao buscar transações: $e');
       throw Exception('Erro ao buscar transações');
@@ -261,11 +259,23 @@ class Database {
         .doc(userId)
         .collection('transactions')
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => Transaction.fromJson(doc.data()))
-              .toList(),
-        );
+        .map((snapshot) => _parseTransactionDocs(snapshot.docs));
+  }
+
+  // Ignora documentos individuais que falharem ao converter (ex.: dados
+  // legados em formato antigo) em vez de derrubar a lista inteira.
+  static List<Transaction> _parseTransactionDocs(
+    List<firestore.QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
+    final transactions = <Transaction>[];
+    for (final doc in docs) {
+      try {
+        transactions.add(Transaction.fromJson(doc.data()));
+      } catch (e) {
+        print('Transação inválida ignorada (${doc.id}): $e');
+      }
+    }
+    return transactions;
   }
 
   static Future<double> getBudgetLimit(String userId) async {
@@ -294,6 +304,37 @@ class Database {
     } catch (e) {
       print('Erro ao salvar limite de orçamento: $e');
       throw Exception('Erro ao salvar limite de orçamento');
+    }
+  }
+
+  static Future<UserSettings> getSettings(String userId) async {
+    try {
+      final doc = await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data();
+        return UserSettings.fromJson(data?['settings'] ?? {});
+      }
+    } catch (e) {
+      print('Erro ao buscar configurações do usuário: $e');
+    }
+    return UserSettings(userId: userId);
+  }
+
+  static Future<void> setSettings(String userId, UserSettings settings) async {
+    try {
+      await firestore.FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .set({
+            'settings': settings.toJson(),
+          }, firestore.SetOptions(merge: true));
+    } catch (e) {
+      print('Erro ao salvar configurações do usuário: $e');
+      throw Exception('Erro ao salvar configurações do usuário');
     }
   }
 }

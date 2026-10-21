@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/user.dart';
+import '../theme/app_theme.dart';
 import 'login.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 
@@ -65,8 +66,9 @@ class _RegisterViewState extends State<RegisterView> {
       try {
         final userCredential = await fire_auth.FirebaseAuth.instance
             .createUserWithEmailAndPassword(
-                email: _emailController.text.trim(),
-                password: _passwordController.text);
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
+            );
 
         final newUser = User(
           id: userCredential.user!.uid,
@@ -99,18 +101,18 @@ class _RegisterViewState extends State<RegisterView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Criar conta'),
-        backgroundColor: const Color(0xFFF4F8FF),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        foregroundColor: AppColors.headingOf(context),
+        titleTextStyle: TextStyle(
+          fontFamily: 'JetBrains Mono',
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: AppColors.headingOf(context),
+        ),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFF4F8FF), Color(0xFFE7EEFF)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
+        child: AppBackground(
           child: Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomInset),
@@ -120,7 +122,7 @@ class _RegisterViewState extends State<RegisterView> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(22),
-                    side: const BorderSide(color: Color(0xFFDCE6FF)),
+                    side: BorderSide(color: AppColors.cardBorderOf(context)),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(24),
@@ -128,19 +130,21 @@ class _RegisterViewState extends State<RegisterView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           'Crie sua conta',
                           style: TextStyle(
                             fontFamily: 'JetBrains Mono',
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF223F9B),
+                            color: AppColors.headingOf(context),
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Comece a organizar seus gastos e metas em poucos passos.',
-                          style: TextStyle(color: Color(0xFF4E5D88)),
+                          style: TextStyle(
+                            color: AppColors.textMutedOf(context),
+                          ),
                         ),
                         const SizedBox(height: 20),
                         Form(
@@ -148,15 +152,9 @@ class _RegisterViewState extends State<RegisterView> {
                           child: TextField(
                             controller: _nameController,
                             textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.person_outline),
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.person_outline),
                               labelText: 'Nome',
-                              filled: true,
-                              fillColor: const Color(0xFFF9FBFF),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
                             ),
                           ),
                         ),
@@ -165,15 +163,9 @@ class _RegisterViewState extends State<RegisterView> {
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.email_outlined),
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.email_outlined),
                             labelText: 'Email',
-                            filled: true,
-                            fillColor: const Color(0xFFF9FBFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
                           ),
                         ),
                         const SizedBox(height: 14),
@@ -187,12 +179,6 @@ class _RegisterViewState extends State<RegisterView> {
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.lock_outline),
                             labelText: 'Senha',
-                            filled: true,
-                            fillColor: const Color(0xFFF9FBFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
                             suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
@@ -218,23 +204,23 @@ class _RegisterViewState extends State<RegisterView> {
                                 : passwordStrength <= 0.6
                                 ? Colors.orange
                                 : Colors.green,
-                            backgroundColor: const Color(0xFFE2E9FF),
+                            backgroundColor: AppColors.primarySoftOf(context),
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           'Força da senha: ${_passwordStrengthLabel(_passwordController.text)}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF5C6B93),
+                            color: AppColors.textFaintOf(context),
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
+                        Text(
                           'Use no mínimo 6 caracteres e combine letras e números.',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF6D7B9F),
+                            color: AppColors.textFaintOf(context),
                           ),
                         ),
                         const SizedBox(height: 14),
@@ -244,46 +230,24 @@ class _RegisterViewState extends State<RegisterView> {
                           textInputAction: TextInputAction.done,
                           onSubmitted: (_) =>
                               _isSubmitting ? null : _register(),
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.lock_outline),
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.lock_outline),
                             labelText: 'Confirmar senha',
-                            filled: true,
-                            fillColor: const Color(0xFFF9FBFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
                           ),
                         ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton(
-                            onPressed: _isSubmitting ? null : _register,
-                            style: FilledButton.styleFrom(
-                              backgroundColor: const Color(0xFF2D5FD3),
-                              foregroundColor: Colors.white,
-                              minimumSize: const Size(double.infinity, 52),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            child: _isSubmitting
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.4,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Registrar',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
+                        const SizedBox(height: 20),
+                        FilledButton(
+                          onPressed: _isSubmitting ? null : _register,
+                          child: _isSubmitting
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.4,
+                                    color: Colors.white,
                                   ),
-                          ),
+                                )
+                              : const Text('Registrar'),
                         ),
                         const SizedBox(height: 10),
                         Row(
