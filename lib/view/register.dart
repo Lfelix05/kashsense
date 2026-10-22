@@ -74,7 +74,7 @@ class _RegisterViewState extends State<RegisterView> {
           id: userCredential.user!.uid,
           name: _nameController.text.trim(),
           email: _emailController.text.trim(),
-          password: _passwordController.text,
+          // A senha fica só no Firebase Auth; não é gravada no Firestore.
           profilePictureUrl: null,
         );
         await FirebaseFirestore.instance

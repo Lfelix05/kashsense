@@ -1,0 +1,113 @@
+rules_version = '2';
+
+// Regras do Firestore do KashSense.
+// Modelo de dados (ver lib/services/database.dart):
+//   users/{uid}                        -> perfil, settings, budgetLimit
+//   users/{uid}/accounts/{accountId}   -> saldo da conta
+//   users/{uid}/transactions/{txId}    -> transações
+// Cada usuário só enxerga e altera os próprios dados. Tudo que não está
+// listado aqui é negado por padrão.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function data() {
+      return request.resource.data;
+    }
+
+    // Campos alterados pela escrita (na criação, todos os campos enviados).
+    function changedKeys() {
+      return resource == null
+        ? data().keys().toSet()
+        : data().diff(resource.data).affectedKeys();
+    }
+
+    function changed(field) {
+      return field in changedKeys();
+    }
+
+    function isShortString(value, maxSize) {
+      return value is string && value.size() <= maxSize;
+    }
+
+    // Limite generoso para valores monetários; evita números absurdos.
+    function isMoney(value) {
+      return value is number && value >= -1000000000000 && value <= 1000000000000;
+    }
+
+    // ----- users/{uid} -----
+    function validUserChanges(userId) {
+      return changedKeys().hasOnly([
+          'id', 'name', 'email', 'password', 'profilePictureUrl',
+          'budgetLimit', 'settings'
+        ])
+        && (!changed('id') || data().id == userId)
+        && (!changed('name') || isShortString(data().name, 100))
+        && (!changed('email') || isShortString(data().email, 254))
+        // A senha é responsabilidade do Firebase Auth; não guardar no banco.
+        && (!changed('password') || data().password == null)
+        // Foto em base64 no próprio documento (limite do Firestore é 1 MiB).
+        && (!changed('profilePictureUrl')
+            || data().profilePictureUrl == null
+            || isShortString(data().profilePictureUrl, 900000))
+        && (!changed('budgetLimit')
+            || (isMoney(data().budgetLimit) && data().budgetLimit >= 0))
+        && (!changed('settings')
+            || (data().settings is map && data().settings.size() <= 40));
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create, update: if isOwner(userId) && validUserChanges(userId);
+      allow list, delete: if false;
+
+      // ----- users/{uid}/accounts/{accountId} -----
+      function validAccountChanges(accountId) {
+        return accountId.size() <= 64
+          && changedKeys().hasOnly([
+              'id', 'userId', 'name', 'balance', 'color', 'budgetLimit'
+            ])
+          && (!changed('id') || data().id == accountId)
+          && (!changed('userId') || data().userId == userId)
+          && (!changed('name') || isShortString(data().name, 50))
+          && (!changed('balance') || isMoney(data().balance))
+          && (!changed('color') || isShortString(data().color, 20))
+          && (!changed('budgetLimit')
+              || (isMoney(data().budgetLimit) && data().budgetLimit >= 0));
+      }
+
+      match /accounts/{accountId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && validAccountChanges(accountId);
+        allow delete: if false;
+      }
+
+      // ----- users/{uid}/transactions/{txId} -----
+      // Transações são sempre gravadas inteiras (set sem merge).
+      function validTransaction(txId) {
+        return txId.size() <= 64
+          && data().keys().hasOnly([
+              'id', 'userId', 'title', 'amount', 'date', 'type', 'category'
+            ])
+          && data().keys().hasAll(['id', 'userId', 'amount', 'type'])
+          && data().id == txId
+          && data().userId == userId
+          && (!('title' in data()) || isShortString(data().title, 100))
+          && isMoney(data().amount) && data().amount >= 0
+          && (!('date' in data()) || isShortString(data().date, 40))
+          && data().type in ['TransactionType.income', 'TransactionType.expense']
+          && (!('category' in data()) || isShortString(data().category, 40));
+      }
+
+      match /transactions/{txId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validTransaction(txId);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

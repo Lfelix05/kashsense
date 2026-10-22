@@ -48,7 +48,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyD8Z1dpmyCVO_dQeBoYSnA1jOKE2IYYcKA',
-    appId: '1:1055445444296:android:85021c26f3933deabba7fd',
+    appId: '1:1055445444296:android:48fd960a77cc7105bba7fd',
     messagingSenderId: '1055445444296',
     projectId: 'kashsense-a5542',
     storageBucket: 'kashsense-a5542.firebasestorage.app',

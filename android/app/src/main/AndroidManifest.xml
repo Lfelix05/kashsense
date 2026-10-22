@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Necessária no release: Firebase e a API do Gemini (o manifest de debug
+         já declara, mas ele não entra no build de release). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="kashsense"
+        android:label="KashSense"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

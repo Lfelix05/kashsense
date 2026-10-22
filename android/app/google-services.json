@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1055445444296:android:85021c26f3933deabba7fd",
+        "mobilesdk_app_id": "1:1055445444296:android:48fd960a77cc7105bba7fd",
         "android_client_info": {
-          "package_name": "com.example.kashsense"
+          "package_name": "com.lfelix05.kashsense"
         }
       },
       "oauth_client": [],
