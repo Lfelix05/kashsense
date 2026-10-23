@@ -4,6 +4,7 @@ import 'package:kashsense/services/database.dart';
 
 import '../theme/app_theme.dart';
 import '../widgets/add_transaction.dart';
+import '../widgets/masked_text.dart';
 
 class TransactionScreen extends StatefulWidget {
   final String userId;
@@ -88,7 +89,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
+                                MaskedText(
                                   'R\$ ${totalExpenses.toStringAsFixed(2)}',
                                   style: const TextStyle(
                                     fontSize: 20,
@@ -126,13 +127,15 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                         : Colors.redAccent,
                                   ),
                                   title: Text(transaction.title),
-                                  subtitle: Text(
-                                    transaction.type ==
+                                  subtitle: MaskedText(
+                                    'R\$ ${transaction.amount.toStringAsFixed(2)}',
+                                    suffix:
+                                        transaction.type ==
                                                 TransactionType.income &&
                                             transaction.title ==
                                                 'Adição de saldo'
-                                        ? 'R\$ ${transaction.amount.toStringAsFixed(2)} - Adição de saldo'
-                                        : 'R\$ ${transaction.amount.toStringAsFixed(2)} - ${_formatCategory(transaction.category)}',
+                                        ? ' - Adição de saldo'
+                                        : ' - ${_formatCategory(transaction.category)}',
                                   ),
                                   trailing: Text(_formatDate(transaction.date)),
                                   iconColor:

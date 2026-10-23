@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kashsense/view/master.dart';
 import 'register.dart';
 import '../models/user.dart';
+import '../services/session_service.dart';
 import '../theme/app_theme.dart';
 
 class LoginView extends StatefulWidget {
@@ -47,12 +48,14 @@ class _LoginViewState extends State<LoginView> {
           .get();
       if (doc.exists && doc.data() != null) {
         final user = User.fromJson(doc.data()!);
+        await SessionService.applyUserSettings(user.id);
         if (!mounted) return;
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (c) => MasterView(userId: user.id, userName: user.name),
           ),
+          (route) => false,
         );
       } else {
         if (!mounted) return;

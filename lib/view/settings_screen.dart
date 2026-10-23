@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kashsense/view/notifications_sett.dart';
 import 'package:kashsense/view/security_sett.dart';
 import 'package:kashsense/widgets/safe_area_condition.dart';
+import '../services/session_service.dart';
 import '../theme/app_theme.dart';
 import 'profile.dart';
 
@@ -16,6 +17,31 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  Future<void> _confirmSignOut() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sair da conta'),
+        content: const Text(
+          'Você precisará entrar com email e senha novamente.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Sair'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await SessionService.signOut();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,12 +145,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SecuritySett(userId: userId),
+                              builder: (context) =>
+                                  SecuritySett(userId: userId),
                             ),
                           );
                         },
                       ),
                     ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.logout, color: AppColors.danger),
+                    title: const Text(
+                      'Sair da conta',
+                      style: TextStyle(color: AppColors.danger),
+                    ),
+                    onTap: _confirmSignOut,
                   ),
                 ),
               ],
