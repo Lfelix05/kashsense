@@ -6,11 +6,13 @@ import 'package:kashsense/widgets/action_button.dart';
 import 'package:kashsense/widgets/month_graph.dart';
 import '../models/user.dart';
 import '../providers/providers.dart';
+import '../services/session_service.dart';
 import '../theme/app_theme.dart';
 import 'record.dart';
 import '../widgets/add_balance.dart';
 import '../widgets/add_transaction.dart';
 import '../widgets/budget_progress.dart';
+import '../widgets/masked_text.dart';
 
 class SummaryScreen extends StatefulWidget {
   final String userId;
@@ -139,19 +141,50 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Saldo Atual',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: AppColors.textMutedOf(context),
-                                    ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Saldo Atual',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.textMutedOf(context),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      ValueListenableBuilder<bool>(
+                                        valueListenable: hideValuesNotifier,
+                                        builder: (context, hidden, _) {
+                                          return IconButton(
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
+                                            iconSize: 20,
+                                            tooltip: hidden
+                                                ? 'Exibir valores'
+                                                : 'Ocultar valores',
+                                            icon: Icon(
+                                              hidden
+                                                  ? Icons
+                                                        .visibility_off_outlined
+                                                  : Icons.visibility_outlined,
+                                              color: AppColors.textMutedOf(
+                                                context,
+                                              ),
+                                            ),
+                                            onPressed: () =>
+                                                hideValuesNotifier.value =
+                                                    !hidden,
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Text(
+                                      MaskedText(
                                         'R\$ ${_currentBalance.toStringAsFixed(2)}',
                                         style: const TextStyle(
                                           fontSize: 24,
@@ -249,7 +282,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          'Saldo atualizado para R\$ ${newBalance.toStringAsFixed(2)}.',
+                                          hideValuesNotifier.value
+                                              ? 'Saldo atualizado.'
+                                              : 'Saldo atualizado para R\$ ${newBalance.toStringAsFixed(2)}.',
                                         ),
                                       ),
                                     );

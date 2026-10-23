@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kashsense/models/transaction_model.dart';
 import 'package:kashsense/services/database.dart';
 import '../theme/app_theme.dart';
+import 'masked_text.dart';
 
 class BudgetProgress extends StatefulWidget {
   final String userId;
@@ -191,7 +192,7 @@ class _BudgetProgressState extends State<BudgetProgress> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  MaskedText(
                     'Gasto: ${_formatCurrency(spent)}',
                     style: TextStyle(
                       fontSize: 13,
@@ -199,7 +200,7 @@ class _BudgetProgressState extends State<BudgetProgress> {
                       fontFamily: 'JetBrains Mono',
                     ),
                   ),
-                  Text(
+                  MaskedText(
                     'Limite: ${_formatCurrency(_limit)}',
                     style: TextStyle(
                       fontSize: 13,

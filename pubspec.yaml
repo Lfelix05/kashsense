@@ -25,14 +25,22 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.4
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon/KashSenseIcon.png"
+  image_path: "assets/Icon/KashSenseIcon.png"
+  # iOS não aceita transparência no ícone
+  remove_alpha_ios: true
+  # Android 8+: ícone adaptativo (o launcher recorta em círculo/squircle)
+  min_sdk_android: 21
+  adaptive_icon_background: "assets/Icon/KashSenseIconBackground.png"
+  adaptive_icon_foreground: "assets/Icon/KashSenseIconForeground.png"
+  adaptive_icon_foreground_inset: 23
 
 flutter:
   uses-material-design: true
   assets:
+    - assets/Icon/
     - assets/fonts/
 
   fonts:

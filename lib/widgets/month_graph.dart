@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:kashsense/models/transaction_model.dart';
 import 'package:kashsense/services/database.dart';
 import 'package:kashsense/theme/app_theme.dart';
+import 'package:kashsense/widgets/masked_text.dart';
 
 Widget monthGraph({required String userId}) {
   return StreamBuilder<List<Transaction>>(
@@ -116,7 +117,7 @@ Widget monthGraph({required String userId}) {
                       style: TextStyle(color: AppColors.textMutedOf(context)),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    MaskedText(
                       _formatCurrency(income),
                       style: TextStyle(
                         fontSize: 16,
@@ -135,7 +136,7 @@ Widget monthGraph({required String userId}) {
                       style: TextStyle(color: AppColors.textMutedOf(context)),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    MaskedText(
                       _formatCurrency(expense),
                       style: TextStyle(
                         fontSize: 16,

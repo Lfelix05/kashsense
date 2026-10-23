@@ -4,6 +4,9 @@ import '../theme/app_theme.dart';
 import '../theme/theme_controller.dart';
 import '../models/user_settings.dart';
 import '../services/database.dart';
+import '../services/pin_service.dart';
+import '../services/session_service.dart';
+import 'pin_setup.dart';
 
 class SecuritySett extends StatefulWidget {
   final String userId;
@@ -16,6 +19,8 @@ class SecuritySett extends StatefulWidget {
 
 class _SecuritySettState extends State<SecuritySett> {
   UserSettings? _settings;
+  // O PIN é guardado no aparelho, então o estado do toggle vem do PinService.
+  bool _hasPin = false;
 
   @override
   void initState() {
@@ -25,10 +30,37 @@ class _SecuritySettState extends State<SecuritySett> {
 
   Future<void> _loadSettings() async {
     final settings = await Database.getSettings(widget.userId);
+    final hasPin = await PinService.hasPin(widget.userId);
     if (!mounted) return;
     setState(() {
       _settings = settings;
+      _hasPin = hasPin;
     });
+  }
+
+  Future<void> _togglePin(bool enable) async {
+    final settings = _settings;
+    if (settings == null) return;
+
+    final confirmed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => enable
+            ? PinSetupView(userId: widget.userId)
+            : PinVerifyView(userId: widget.userId),
+      ),
+    );
+    if (confirmed != true) return;
+
+    if (!enable) {
+      await PinService.removePin(widget.userId);
+    }
+    if (!mounted) return;
+    setState(() {
+      _hasPin = enable;
+      settings.pinEnabled = enable;
+    });
+    _save();
   }
 
   Future<void> _save() async {
@@ -161,15 +193,11 @@ class _SecuritySettState extends State<SecuritySett> {
                   ),
                   _toggleTile(
                     title: 'PIN de acesso',
-                    subtitle: 'Exige um código numérico para abrir o app.',
-                    value: settings.pinEnabled,
-                    chipLabel: 'Em breve',
-                    onChanged: (value) {
-                      setState(() {
-                        settings.pinEnabled = value;
-                      });
-                      _save();
-                    },
+                    subtitle:
+                        'Exige um código de ${PinService.pinLength} dígitos '
+                        'para abrir o app neste aparelho.',
+                    value: _hasPin,
+                    onChanged: _togglePin,
                   ),
                   const SizedBox(height: 10),
                   _sectionTitle('Privacidade'),
@@ -181,6 +209,7 @@ class _SecuritySettState extends State<SecuritySett> {
                       setState(() {
                         settings.hideValues = value;
                       });
+                      hideValuesNotifier.value = value;
                       _save();
                     },
                   ),
